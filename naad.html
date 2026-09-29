@@ -1,0 +1,2205 @@
+<meta charset="utf-8">
+<title>Naad Riyaz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Tiro+Devanagari+Hindi&display=swap">
+
+<style>
+/* ---------------------------------------------------------------- tokens */
+:root{
+  /* morning paper, indigo ink */
+  --bg:#EDEBF3;        --surface:#F8F7FB;   --surface-2:#E4E1EE;
+  --line:#D2CEE1;      --line-soft:#E1DEEB;
+  --text:#171B2E;      --muted:#575D75;     --faint:#878CA3;
+  --accent:#9A6A08;    --accent-2:#C79A3A;  --wave:#9A6A08;
+  --good:#1C7A50;      --warn:#B0631A;      --bad:#AE352F;
+  --good-bg:#DCEFE5;   --warn-bg:#F6E7D6;   --bad-bg:#F6DEDC;
+  --grid:#DCD8E7;      --grid-strong:#C6C1D8;
+  --glow:rgba(154,106,8,.14);
+  --shadow:0 1px 2px rgba(23,27,46,.06), 0 8px 24px -12px rgba(23,27,46,.18);
+  --r:14px; --r-sm:9px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1222;      --surface:#151B30;   --surface-2:#1F2744;
+    --line:#2B3454;    --line-soft:#212942;
+    --text:#ECE6DA;    --muted:#9AA1BB;     --faint:#6C7390;
+    --accent:#E9B44C;  --accent-2:#F0C063;  --wave:#F0C063;
+    --good:#5CC08D;    --warn:#E9944C;      --bad:#E0605A;
+    --good-bg:#16311F; --warn-bg:#33230F;   --bad-bg:#35181A;
+    --grid:#1E2540;    --grid-strong:#2C3556;
+    --glow:rgba(233,180,76,.20);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1222;        --surface:#151B30;   --surface-2:#1F2744;
+  --line:#2B3454;      --line-soft:#212942;
+  --text:#ECE6DA;      --muted:#9AA1BB;     --faint:#6C7390;
+  --accent:#E9B44C;    --accent-2:#F0C063;  --wave:#F0C063;
+  --good:#5CC08D;      --warn:#E9944C;      --bad:#E0605A;
+  --good-bg:#16311F;   --warn-bg:#33230F;   --bad-bg:#35181A;
+  --grid:#1E2540;      --grid-strong:#2C3556;
+  --glow:rgba(233,180,76,.20);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric:tabular-nums}
+.dev{font-family:"Tiro Devanagari Hindi", serif}
+button{font:inherit; color:inherit}
+:where(button,select,input,[tabindex]):focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px}
+
+/* ---------------------------------------------------------------- shell */
+.wrap{
+  max-width:1180px; margin:0 auto;
+  padding-inline:16px; padding-block:0 40px;
+  display:flex; flex-direction:column; gap:14px;
+}
+
+header.bar{
+  position:sticky; top:env(safe-area-inset-top, 0px); z-index:30;
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding-block:12px; margin-bottom:2px;
+  background:linear-gradient(var(--bg) 72%, transparent);
+}
+.brand{display:flex; align-items:baseline; gap:9px; margin-right:auto; min-width:0}
+.brand h1{
+  font-family:"Instrument Serif", Georgia, serif; font-weight:400;
+  font-size:30px; line-height:1; margin:0; letter-spacing:.01em;
+}
+.brand .nd{font-family:"Tiro Devanagari Hindi", serif; font-size:21px; color:var(--accent); line-height:1}
+.brand .tag{
+  font-size:11.5px; color:var(--faint); letter-spacing:.09em; text-transform:uppercase;
+  white-space:nowrap; background:none; border:0; padding:2px 0; cursor:pointer;
+  border-bottom:1px dotted var(--line); font-family:inherit;
+}
+.brand .tag:hover{color:var(--accent); border-bottom-color:var(--accent)}
+
+.ctl{
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:999px; padding:6px 13px;
+  font-size:13px; cursor:pointer;
+  transition:border-color .15s, background .15s, color .15s;
+}
+.ctl:hover{border-color:var(--grid-strong)}
+.ctl[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#0D1222; font-weight:500}
+:root:not([data-theme="dark"]) .ctl[aria-pressed="true"]{color:#FFF8EA}
+.ctl.primary{background:var(--accent); border-color:var(--accent); color:#0D1222; font-weight:600; padding:8px 20px}
+:root:not([data-theme="dark"]) .ctl.primary{color:#FFF8EA}
+.ctl.primary.live{background:var(--bad); border-color:var(--bad); color:#fff}
+.ctl:disabled{opacity:.45; cursor:not-allowed}
+.dot{width:7px; height:7px; border-radius:50%; background:currentColor; flex:none}
+.dot.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ---------------------------------------------------------------- panels */
+.panel{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r); box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.phead{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px; border-bottom:1px solid var(--line-soft);
+  font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint);
+}
+.phead .sp{margin-left:auto; display:flex; align-items:center; gap:10px; text-transform:none; letter-spacing:0; font-size:12px; color:var(--muted)}
+canvas{display:block; width:100%; touch-action:none}
+
+/* ------------------------------------------------------------ scope band */
+#scopeWrap{position:relative; background:var(--surface)}
+#scope{height:186px}
+.scopeNote{
+  position:absolute; left:14px; bottom:10px; font-size:11.5px; color:var(--faint);
+  pointer-events:none; letter-spacing:.02em;
+}
+.lockPill{
+  position:absolute; right:12px; top:10px;
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; padding:4px 10px; border-radius:999px;
+  background:var(--surface-2); color:var(--muted); border:1px solid var(--line);
+  transition:color .25s, background .25s, border-color .25s;
+}
+.lockPill.on{background:var(--good-bg); color:var(--good); border-color:transparent}
+
+/* ------------------------------------------------------------- readout */
+.readRow{display:grid; grid-template-columns:minmax(0,300px) minmax(0,1fr); gap:14px}
+.swaraCard{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; padding:18px 14px 16px; min-height:236px; position:relative;
+}
+.swaraCard.idle .big,.swaraCard.idle .devBig,.swaraCard.idle .oct{opacity:.22}
+.devBig{
+  font-family:"Tiro Devanagari Hindi", serif; font-size:58px; line-height:1;
+  color:var(--accent); transition:opacity .2s;
+}
+.big{
+  font-family:"Instrument Serif", Georgia, serif; font-size:52px; line-height:1.05;
+  letter-spacing:.005em; transition:opacity .2s; text-align:center;
+}
+.big .kom{text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:5px}
+.oct{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); transition:opacity .2s}
+.hzline{font-size:12.5px; color:var(--muted); margin-top:7px}
+.hzline b{color:var(--text); font-weight:500}
+
+/* cents meter */
+.meter{width:100%; max-width:260px; margin-top:13px}
+.meterBar{
+  position:relative; height:34px; border-radius:var(--r-sm);
+  background:var(--surface-2); overflow:hidden;
+}
+.meterZone{position:absolute; top:0; bottom:0; left:calc(50% - 10%); width:20%; background:var(--good-bg)}
+.meterTick{position:absolute; top:6px; bottom:6px; width:1px; background:var(--grid-strong)}
+.meterMid{position:absolute; top:0; bottom:0; left:50%; width:2px; margin-left:-1px; background:var(--grid-strong)}
+.needle{
+  position:absolute; top:3px; bottom:3px; width:4px; margin-left:-2px; border-radius:3px;
+  background:var(--accent); left:50%;
+  transition:background .2s;
+  box-shadow:0 0 0 3px var(--glow);
+}
+.needle.off{opacity:0}
+.meterLabels{display:flex; justify-content:space-between; font-size:10.5px; color:var(--faint); margin-top:5px}
+.centsBig{font-size:15px; font-weight:500; margin-top:8px; letter-spacing:.01em}
+
+/* live stats */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(126px,1fr)); gap:1px; background:var(--line-soft)}
+.stat{background:var(--surface); padding:13px 14px 12px; min-width:0}
+.stat .k{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); white-space:nowrap}
+.stat .v{font-size:19px; font-weight:500; margin-top:3px; letter-spacing:-.01em}
+.stat .v small{font-size:11.5px; color:var(--muted); font-weight:400; letter-spacing:0}
+.stat .sub{font-size:11px; color:var(--muted); margin-top:1px}
+.bars{display:flex; gap:2.5px; margin-top:7px; align-items:flex-end; height:14px}
+.bars i{flex:1; background:var(--surface-2); border-radius:1.5px; height:100%}
+.bars i.f{background:var(--accent)}
+.bars i.f.good{background:var(--good)}
+.bars i.f.bad{background:var(--bad)}
+
+.chip{
+  display:inline-flex; align-items:center; gap:5px; padding:2px 9px;
+  border-radius:999px; font-size:11.5px; font-weight:500;
+  background:var(--surface-2); color:var(--muted);
+}
+.chip.good{background:var(--good-bg); color:var(--good)}
+.chip.warn{background:var(--warn-bg); color:var(--warn)}
+.chip.bad{background:var(--bad-bg); color:var(--bad)}
+
+/* ------------------------------------------------------------ ribbon */
+#ribbon{height:232px}
+#envelope{height:128px}
+
+/* ------------------------------------------------------------- coach */
+.coachBody{padding:0; max-height:330px; overflow-y:auto}
+.noteCard{
+  display:grid; grid-template-columns:52px minmax(0,1fr) auto;
+  gap:12px; align-items:start;
+  padding:13px 14px; border-bottom:1px solid var(--line-soft);
+  animation:slideIn .26s ease-out;
+}
+@keyframes slideIn{from{opacity:0; transform:translateY(-5px)}to{opacity:1; transform:none}}
+@media (prefers-reduced-motion:reduce){ .noteCard{animation:none} .dot.pulse{animation:none} }
+.noteCard:last-child{border-bottom:0}
+.ncSw{
+  font-family:"Instrument Serif", Georgia, serif; font-size:27px; line-height:1;
+  text-align:center; padding-top:2px;
+}
+.ncSw .o{display:block; font-family:"IBM Plex Mono",monospace; font-size:9px; color:var(--faint); letter-spacing:.06em; margin-top:3px}
+.ncMsg{font-size:13px; color:var(--muted); line-height:1.5}
+.ncMsg b{color:var(--text); font-weight:500}
+.ncMsg .line{display:block}
+.ncMsg .line + .line{margin-top:3px}
+.ncScore{text-align:right; font-size:21px; font-weight:500; line-height:1.1; letter-spacing:-.02em}
+.ncScore small{display:block; font-size:10px; color:var(--faint); font-weight:400; letter-spacing:.08em; text-transform:uppercase; margin-top:2px}
+.empty{padding:28px 18px; text-align:center; color:var(--faint); font-size:13px}
+
+/* ------------------------------------------------------------- modes */
+.modes{display:flex; gap:7px; flex-wrap:wrap; align-items:center}
+.drill{
+  padding:12px 14px; border-top:1px solid var(--line-soft);
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+}
+.seq{display:flex; gap:5px; flex-wrap:wrap; align-items:center}
+.seq span{
+  font-family:"Instrument Serif", Georgia, serif; font-size:19px; line-height:1;
+  width:30px; height:30px; display:grid; place-items:center; border-radius:7px;
+  background:var(--surface-2); color:var(--muted);
+  transition:background .18s, color .18s, transform .18s;
+}
+.seq span.now{background:var(--accent); color:#0D1222; transform:scale(1.11)}
+:root:not([data-theme="dark"]) .seq span.now{color:#FFF8EA}
+.seq span.hit{background:var(--good-bg); color:var(--good)}
+.seq span.miss{background:var(--bad-bg); color:var(--bad)}
+.seq span .k{text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px}
+
+.holdRing{width:46px; height:46px; flex:none}
+
+/* ------------------------------------------------------------ settings */
+dialog{
+  border:1px solid var(--line); border-radius:var(--r); background:var(--surface);
+  color:var(--text); padding:0; max-width:440px; width:calc(100% - 32px);
+  box-shadow:0 20px 60px -20px rgba(0,0,0,.5);
+}
+dialog::backdrop{background:rgba(8,11,22,.55); backdrop-filter:blur(2px)}
+.dlgHead{display:flex; align-items:center; padding:15px 18px 12px; border-bottom:1px solid var(--line-soft)}
+.dlgHead h2{margin:0; font-family:"Instrument Serif",Georgia,serif; font-weight:400; font-size:21px}
+.dlgBody{padding:6px 18px 18px; display:flex; flex-direction:column; gap:2px}
+.field{display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--line-soft); flex-wrap:wrap}
+.field:last-child{border-bottom:0}
+.field label{flex:1; min-width:120px; font-size:13px}
+.field .hint{display:block; font-size:11.5px; color:var(--faint); margin-top:2px; font-weight:400}
+select,input[type=number]{
+  background:var(--surface-2); color:var(--text); border:1px solid var(--line);
+  border-radius:8px; padding:7px 10px; font:inherit; font-size:13px; min-width:104px;
+}
+input[type=range]{accent-color:var(--accent); width:132px}
+.seg{display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:2px; gap:2px}
+.seg button{border:0; background:transparent; padding:5px 11px; border-radius:7px; font-size:12.5px; cursor:pointer; color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent); color:#0D1222; font-weight:500}
+:root:not([data-theme="dark"]) .seg button[aria-pressed="true"]{color:#FFF8EA}
+
+/* ------------------------------------------------------------- gate */
+#gate{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
+  text-align:center; padding:52px 22px 56px;
+}
+#gate .gdev{font-family:"Tiro Devanagari Hindi",serif; font-size:44px; color:var(--accent); line-height:1.25}
+#gate h2{
+  font-family:"Instrument Serif",Georgia,serif; font-weight:400; font-size:clamp(28px,5.4vw,40px);
+  margin:6px 0 0; text-wrap:balance; letter-spacing:.01em;
+}
+#gate p{max-width:46ch; color:var(--muted); margin:11px 0 0; font-size:14.5px; text-wrap:pretty}
+#gate .why{
+  margin-top:24px; display:grid; gap:9px; text-align:left;
+  max-width:400px; width:100%; font-size:13px; color:var(--muted);
+}
+#gate .why div{display:flex; gap:10px; align-items:flex-start}
+#gate .why b{color:var(--text); font-weight:500}
+#gate .why i{
+  flex:none; width:20px; height:20px; border-radius:50%; display:grid; place-items:center;
+  background:var(--surface-2); color:var(--accent); font-style:normal; font-size:11px; margin-top:1px;
+  font-family:"IBM Plex Mono",monospace;
+}
+.err{
+  margin-top:18px; padding:11px 14px; border-radius:var(--r-sm);
+  background:var(--bad-bg); color:var(--bad); font-size:13px; max-width:420px; text-align:left;
+}
+.err b{display:block; margin-bottom:2px}
+.warnBox{
+  margin:0 0 14px; padding:11px 14px; border-radius:var(--r-sm);
+  background:var(--warn-bg); color:var(--warn); font-size:13px;
+}
+.warnBox b{font-weight:600}
+
+footer{
+  color:var(--faint); font-size:12px; text-align:center;
+  padding-block:6px 0; line-height:1.7;
+}
+footer kbd{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; background:var(--surface-2);
+  border:1px solid var(--line); border-radius:4px; padding:1px 5px;
+}
+
+/* ------------------------------------------------------------ narrow */
+@media (max-width:820px){
+  .readRow{grid-template-columns:1fr}
+  #scope{height:150px}
+  #ribbon{height:210px}
+  .swaraCard{min-height:0; padding:16px 14px}
+  .devBig{font-size:48px}
+  .big{font-size:42px}
+}
+@media (max-width:460px){
+  .brand h1{font-size:25px}
+  .brand .tag{display:none}
+  .stat .v{font-size:17px}
+  #scope{height:126px}
+  #ribbon{height:192px}
+  #envelope{height:110px}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="bar">
+    <div class="brand">
+      <span class="nd">नाद</span>
+      <h1>Naad</h1>
+      <button class="tag" id="tagline" title="Change your flute's scale">C med · Sa C5</button>
+    </div>
+    <button class="ctl" id="droneBtn" aria-pressed="false" title="Tanpura-style drone on Sa and Pa">
+      <span class="dot"></span> Drone
+    </button>
+    <button class="ctl" id="setBtn" title="Settings">Settings</button>
+    <button class="ctl primary" id="startBtn">Start listening</button>
+  </header>
+
+  <!-- ------------------------------------------------ permission gate -->
+  <section class="panel" id="gate">
+    <div class="gdev">सा रे ग म प ध नि</div>
+    <h2>Hold a swara. Watch it hold still.</h2>
+    <p>
+      Naad listens to your bansuri and tells you which swara you are on, how far off
+      it is in cents, whether your breath is steady, and whether you moved cleanly to
+      the next note.
+    </p>
+    <div class="why">
+      <div><i>1</i><span><b>Allow the microphone.</b> Audio is analysed entirely in this tab. Nothing is recorded, stored, or uploaded.</span></div>
+      <div><i>2</i><span><b>Set your Sa.</b> Default is a C natural bansuri. If yours differs, play your Sa once and press <em>Tune to my Sa</em> in Settings.</span></div>
+      <div><i>3</i><span><b>Play.</b> Sit about an arm's length from the mic, in a quiet room, and start with a long Sa.</span></div>
+    </div>
+    <div class="err" id="gateErr" hidden></div>
+  </section>
+
+  <!-- ------------------------------------------------ live instrument -->
+  <div id="live" hidden style="display:flex; flex-direction:column; gap:14px">
+
+    <div class="warnBox" id="inputWarn" hidden></div>
+
+    <section class="panel" id="scopeWrap">
+      <div class="phead">
+        Waveform
+        <div class="sp"><span id="scopeMeta">—</span></div>
+      </div>
+      <canvas id="scope"></canvas>
+      <div class="lockPill" id="lockPill"><span class="dot"></span> <span>waiting</span></div>
+      <div class="scopeNote" id="scopeNote">Locked to your pitch — a steady note freezes the wave.</div>
+    </section>
+
+    <div class="readRow">
+      <section class="panel swaraCard idle" id="swaraCard">
+        <div class="devBig" id="devBig">—</div>
+        <div class="big" id="bigName">Silence</div>
+        <div class="oct" id="octName">play something</div>
+        <div class="hzline mono"><b id="hzVal">—</b> Hz</div>
+        <div class="meter">
+          <div class="meterBar" id="meterBar">
+            <div class="meterZone"></div>
+            <div class="meterMid"></div>
+            <div class="meterTick" style="left:25%"></div>
+            <div class="meterTick" style="left:75%"></div>
+            <div class="needle off" id="needle"></div>
+          </div>
+          <div class="meterLabels mono"><span>−50¢</span><span>flat ◂ ▸ sharp</span><span>+50¢</span></div>
+          <div class="centsBig mono" id="centsBig">—</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="phead">This note <div class="sp"><span id="noteAge">—</span></div></div>
+        <div class="stats">
+          <div class="stat">
+            <div class="k">Pitch steadiness</div>
+            <div class="v" id="stSteady">—</div>
+            <div class="sub" id="stSteadySub">±0¢</div>
+            <div class="bars" id="barSteady"></div>
+          </div>
+          <div class="stat">
+            <div class="k">Breath</div>
+            <div class="v" id="stBreath">—</div>
+            <div class="sub" id="stBreathSub">volume held</div>
+            <div class="bars" id="barBreath"></div>
+          </div>
+          <div class="stat">
+            <div class="k">Tone</div>
+            <div class="v" id="stTone">—</div>
+            <div class="sub" id="stToneSub">clarity</div>
+            <div class="bars" id="barTone"></div>
+          </div>
+          <div class="stat">
+            <div class="k">Input level</div>
+            <div class="v" id="stLevel">—</div>
+            <div class="sub" id="stLevelSub">dBFS</div>
+            <div class="bars" id="barLevel"></div>
+          </div>
+        </div>
+        <div class="drill" id="drillBar">
+          <div class="modes" role="group" aria-label="Practice mode">
+            <button class="ctl" data-mode="free" aria-pressed="true">Free play</button>
+            <button class="ctl" data-mode="hold" aria-pressed="false">Hold a swara</button>
+            <button class="ctl" data-mode="scale" aria-pressed="false">Aroha–avaroha</button>
+            <button class="ctl" data-mode="alankar" aria-pressed="false">Alankar</button>
+          </div>
+        </div>
+        <div class="drill" id="drillDetail" hidden></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="phead">
+        Pitch over time
+        <div class="sp"><span id="ribbonMeta">—</span></div>
+      </div>
+      <canvas id="ribbon"></canvas>
+    </section>
+
+    <section class="panel">
+      <div class="phead">
+        Breath envelope
+        <div class="sp"><span id="envMeta">—</span></div>
+      </div>
+      <canvas id="envelope"></canvas>
+    </section>
+
+    <section class="panel">
+      <div class="phead">
+        Coach
+        <div class="sp">
+          <span id="sessionMeta">—</span>
+          <button class="ctl" id="clearBtn" style="padding:3px 10px; font-size:12px">Clear</button>
+        </div>
+      </div>
+      <div class="coachBody" id="coach">
+        <div class="empty">Play a note and hold it for at least half a second. Notes you finish show up here with what went well and what to fix.</div>
+      </div>
+    </section>
+
+    <footer>
+      Everything runs locally in this tab — no audio leaves your device.<br>
+      <kbd>Space</kbd> start / stop · <kbd>D</kbd> drone · <kbd>C</kbd> clear
+    </footer>
+  </div>
+
+  <div id="gateFooter" style="text-align:center">
+    <footer>Works best in Chrome, Edge, Safari or Firefox on a device with a microphone.</footer>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------- settings -->
+<dialog id="settings">
+  <div class="dlgHead">
+    <h2>Settings</h2>
+    <button class="ctl" id="closeSet" style="margin-left:auto; padding:4px 12px">Done</button>
+  </div>
+  <div class="dlgBody">
+    <div class="field">
+      <label for="saSelect">Your bansuri
+        <span class="hint">Sets where Sa sits. Naad snaps to the nearest octave automatically.</span>
+      </label>
+      <select id="saSelect"></select>
+    </div>
+    <div class="field">
+      <label for="saHz">Sa frequency
+        <span class="hint" id="saHzHint">—</span>
+      </label>
+      <input type="number" id="saHz" min="120" max="1400" step="0.01">
+    </div>
+    <div class="field">
+      <label>Tune to what I'm playing
+        <span class="hint">Play and hold your Sa, then press this. Naad sets Sa to the pitch it hears.</span>
+      </label>
+      <button class="ctl" id="calibBtn">Tune to my Sa</button>
+    </div>
+    <div class="field">
+      <label for="a4">Concert A₄
+        <span class="hint">Reference for the named keys. 440 Hz is standard.</span>
+      </label>
+      <input type="number" id="a4" min="392" max="466" step="0.5" value="440">
+    </div>
+    <div class="field">
+      <label>Intonation
+        <span class="hint">Equal temperament matches a chromatic tuner. Just intonation matches shruti — komal Ga, Ga, komal Dha, Dha and Ni shift by 12–16 cents.</span>
+      </label>
+      <div class="seg" role="group" aria-label="Intonation">
+        <button id="tunET" aria-pressed="true">Equal</button>
+        <button id="tunJI" aria-pressed="false">Just</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="tol">In-tune tolerance
+        <span class="hint" id="tolHint">±10 cents</span>
+      </label>
+      <input type="range" id="tol" min="3" max="25" step="1" value="10">
+    </div>
+    <div class="field">
+      <label>Detector response
+        <span class="hint">Faster follows quick passages; steadier is calmer on long notes.</span>
+      </label>
+      <div class="seg" role="group" aria-label="Detector response">
+        <button data-win="1024" aria-pressed="false">Fast</button>
+        <button data-win="2048" aria-pressed="true">Balanced</button>
+        <button data-win="4096" aria-pressed="false">Steady</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="cyc">Wave zoom
+        <span class="hint" id="cycHint">3 cycles across the screen</span>
+      </label>
+      <input type="range" id="cyc" min="1" max="12" step="1" value="3">
+    </div>
+    <div class="field">
+      <label for="droneVol">Drone volume<span class="hint">Sa and Pa, tanpura-style</span></label>
+      <input type="range" id="droneVol" min="0" max="100" step="1" value="30">
+    </div>
+    <div class="field">
+      <label>Theme</label>
+      <div class="seg" role="group" aria-label="Theme">
+        <button data-theme-set="auto" aria-pressed="true">Auto</button>
+        <button data-theme-set="light" aria-pressed="false">Light</button>
+        <button data-theme-set="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Keep screen awake<span class="hint">Stops the display sleeping during riyaz.</span></label>
+      <button class="ctl" id="wakeBtn" aria-pressed="false">Off</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+'use strict';
+
+/* ==========================================================================
+   naad — a riyaz mirror for the bansuri
+   Everything runs locally. Constants marked (M) were measured, not guessed.
+   ========================================================================== */
+
+var FFT_SIZE      = 4096;   // scope needs 3 cycles + 2.2-period search + correlation
+var HIST_SEC      = 45;     // frame ring buffer length
+var GATE_RMS      = 0.0035; // (M) room tone sits an order of magnitude below this
+var CLARITY_ON    = 0.32;   // (M) breath noise scores 0.07, a very airy tone 0.43
+var CLARITY_OFF   = 0.24;   // hysteresis, so an airy note does not strobe
+var MPM_K         = 0.93;   // (M) zero octave errors across 0.80-0.98; breaks at 0.99
+var ATTACK_IGNORE = 0.18;   // s of onset transient excluded from intonation judging
+var MIN_NOTE      = 0.18;   // s — shorter than this is not worth grading
+var LEAVE_CENTS   = 55;     // leaving the current note's centre starts a transition
+var ARRIVE_CENTS  = 30;     // arriving within this of a new centre ends it
+var MEDIAN_N      = 5;      // (M) statistics must come off the median stream
+
+/* ------------------------------------------------------- radix-2 FFT ---- */
+function makeFFT(n) {
+  var levels = Math.log2(n) | 0, i, j, x, r;
+  var cos = new Float32Array(n / 2), sin = new Float32Array(n / 2);
+  for (i = 0; i < n / 2; i++) { cos[i] = Math.cos(2 * Math.PI * i / n); sin[i] = Math.sin(2 * Math.PI * i / n); }
+  var rev = new Uint32Array(n);
+  for (i = 0; i < n; i++) { x = i; r = 0; for (j = 0; j < levels; j++) { r = (r << 1) | (x & 1); x >>= 1; } rev[i] = r; }
+  return { n: n, transform: function (re, im) {
+    var i, j, t, size, half, step, k, l, tre, tim;
+    for (i = 0; i < n; i++) { j = rev[i]; if (j > i) { t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+    for (size = 2; size <= n; size *= 2) {
+      half = size / 2; step = n / size;
+      for (i = 0; i < n; i += size) {
+        for (j = i, k = 0; j < i + half; j++, k += step) {
+          l = j + half;
+          tre = re[l] * cos[k] + im[l] * sin[k];
+          tim = -re[l] * sin[k] + im[l] * cos[k];
+          re[l] = re[j] - tre; im[l] = im[j] - tim;
+          re[j] += tre;        im[j] += tim;
+        }
+      }
+    }
+  } };
+}
+
+/* --------------------------- McLeod Pitch Method over an FFT autocorr ---- */
+function createDetector(windowSize) {
+  var fftSize = 1 << Math.ceil(Math.log2(windowSize * 2)); // pad >= W + maxLag
+  var fft = makeFFT(fftSize);
+  var re = new Float32Array(fftSize), im = new Float32Array(fftSize);
+  var nsdf = new Float32Array(windowSize), work = new Float32Array(windowSize);
+  var maxPos = new Int32Array(64);
+
+  return { windowSize: windowSize, detect: function (buf, offset, sampleRate, minFreq, maxFreq, floor) {
+    var i, tau, mean = 0, energy = 0, v;
+    for (i = 0; i < windowSize; i++) mean += buf[offset + i];
+    mean /= windowSize;
+    for (i = 0; i < windowSize; i++) { v = buf[offset + i] - mean; work[i] = v; energy += v * v; }
+    var rms = Math.sqrt(energy / windowSize);
+    if (rms < 1e-6) return { frequency: -1, clarity: 0, rms: rms };
+
+    re.fill(0); im.fill(0);
+    for (i = 0; i < windowSize; i++) re[i] = work[i];
+    fft.transform(re, im);
+    for (i = 0; i < fftSize; i++) { var p = re[i] * re[i] + im[i] * im[i]; re[i] = p; im[i] = 0; }
+    fft.transform(re, im);                       // real, even spectrum -> inverse by symmetry
+    var inv = 1 / fftSize;
+    for (i = 0; i < windowSize; i++) re[i] *= inv;
+
+    var tauMax = Math.min(windowSize - 2, Math.floor(sampleRate / minFreq));
+    var tauMin = Math.max(2, Math.floor(sampleRate / maxFreq));
+    if (tauMax <= tauMin + 2) return { frequency: -1, clarity: 0, rms: rms };
+    var m = 2 * energy;
+    nsdf[0] = 1;
+    for (tau = 1; tau <= tauMax; tau++) {
+      m -= work[tau - 1] * work[tau - 1] + work[windowSize - tau] * work[windowSize - tau];
+      nsdf[tau] = m > 1e-12 ? (2 * re[tau]) / m : 0;
+    }
+
+    // Key maxima. The lobe skip MUST start at tau=0: for a high note the whole
+    // first lobe can sit below tauMin, and starting there lands mid-lobe, skips
+    // the true peak and locks onto 2*period -- a confident octave-low reading.
+    var nMax = 0; tau = 1;
+    while (tau < tauMax && nsdf[tau] > 0) tau++;
+    while (tau < tauMax && nsdf[tau] <= 0) tau++;
+    while (tau < tauMax && nMax < maxPos.length) {
+      var best = tau, bestV = nsdf[tau];
+      while (tau < tauMax && nsdf[tau] > 0) { if (nsdf[tau] > bestV) { bestV = nsdf[tau]; best = tau; } tau++; }
+      if (bestV > 0 && best >= tauMin && best < tauMax - 1) maxPos[nMax++] = best;
+      while (tau < tauMax && nsdf[tau] <= 0) tau++;
+    }
+    if (nMax === 0) return { frequency: -1, clarity: 0, rms: rms };
+
+    var highest = 0;
+    for (i = 0; i < nMax; i++) if (nsdf[maxPos[i]] > highest) highest = nsdf[maxPos[i]];
+    if (highest < floor) return { frequency: -1, clarity: highest, rms: rms };
+
+    var thresh = MPM_K * highest, chosen = maxPos[0];
+    for (i = 0; i < nMax; i++) if (nsdf[maxPos[i]] >= thresh) { chosen = maxPos[i]; break; }
+
+    var y0 = nsdf[chosen - 1], y1 = nsdf[chosen], y2 = nsdf[chosen + 1];
+    var den = 2 * (2 * y1 - y0 - y2);
+    var shift = den !== 0 ? (y2 - y0) / den : 0;
+    if (shift > 1) shift = 1; else if (shift < -1) shift = -1;
+    var clarity = Math.max(0, Math.min(1, y1 + 0.25 * (y2 - y0) * shift));
+    var frequency = sampleRate / (chosen + shift);
+    if (frequency < minFreq || frequency > maxFreq) return { frequency: -1, clarity: clarity, rms: rms };
+    return { frequency: frequency, clarity: clarity, rms: rms };
+  } };
+}
+
+/* --------------------------------------------------------- the swaras --- */
+var SWARAS = [
+  { i:0,  s:'S', name:'Sa',        full:'Shadja',          dev:'सा', et:0,    ji:0,       kind:'achal'   },
+  { i:1,  s:'r', name:'komal Re',  full:'Komal Rishabh',   dev:'रे', et:100,  ji:111.73,  kind:'komal'   },
+  { i:2,  s:'R', name:'Re',        full:'Shuddha Rishabh', dev:'रे', et:200,  ji:203.91,  kind:'shuddha' },
+  { i:3,  s:'g', name:'komal Ga',  full:'Komal Gandhar',   dev:'ग',  et:300,  ji:315.64,  kind:'komal'   },
+  { i:4,  s:'G', name:'Ga',        full:'Shuddha Gandhar', dev:'ग',  et:400,  ji:386.31,  kind:'shuddha' },
+  { i:5,  s:'m', name:'Ma',        full:'Shuddha Madhyam', dev:'म',  et:500,  ji:498.04,  kind:'shuddha' },
+  { i:6,  s:'M', name:'teevra Ma', full:'Teevra Madhyam',  dev:'म',  et:600,  ji:590.22,  kind:'teevra'  },
+  { i:7,  s:'P', name:'Pa',        full:'Pancham',         dev:'प',  et:700,  ji:701.96,  kind:'achal'   },
+  { i:8,  s:'d', name:'komal Dha', full:'Komal Dhaivat',   dev:'ध',  et:800,  ji:813.69,  kind:'komal'   },
+  { i:9,  s:'D', name:'Dha',       full:'Shuddha Dhaivat', dev:'ध',  et:900,  ji:884.36,  kind:'shuddha' },
+  { i:10, s:'n', name:'komal Ni',  full:'Komal Nishad',    dev:'नि', et:1000, ji:996.09,  kind:'komal'   },
+  { i:11, s:'N', name:'Ni',        full:'Shuddha Nishad',  dev:'नि', et:1100, ji:1088.27, kind:'shuddha' }
+];
+var OCT_NAME = { '-2':'ati-mandra', '-1':'mandra', '0':'madhya', '1':'taar', '2':'ati-taar' };
+
+// A bansuri is named by its Sa (top three holes closed). All six holes closed
+// sounds a fourth LOWER -- the "pipe note". Conflating the two is the single
+// most common way to get every octave label in the app wrong.
+// pc = pitch class from C (C=0 .. B=11), oct = scientific octave.
+var FLUTES = [
+  { label:'C natural medium', pc: 0, oct:5 },
+  { label:'C sharp medium',   pc: 1, oct:5 },
+  { label:'D natural medium', pc: 2, oct:5 },
+  { label:'E natural medium', pc: 4, oct:5 },
+  { label:'F natural medium', pc: 5, oct:5 },
+  { label:'G natural medium', pc: 7, oct:4 },
+  { label:'A natural medium', pc: 9, oct:4 },
+  { label:'B natural medium', pc:11, oct:4 },
+  { label:'F natural bass',   pc: 5, oct:4 },
+  { label:'C natural bass',   pc: 0, oct:4 }
+];
+var PC_NAME = ['C','C\u266f','D','D\u266f','E','F','F\u266f','G','G\u266f','A','A\u266f','B'];
+function midiOf(f) { return 12 * (f.oct + 1) + f.pc; }
+function fluteHz(f, a4) { return a4 * Math.pow(2, (midiOf(f) - 69) / 12); }
+function noteName(midi) { return PC_NAME[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1); }
+
+function targets(tuning) {
+  var t = new Float64Array(12);
+  for (var i = 0; i < 12; i++) t[i] = tuning === 'ji' ? SWARAS[i].ji : SWARAS[i].et;
+  return t;
+}
+function centsFromSa(f, sa) { return 1200 * Math.log2(f / sa); }
+
+/** nearest swara to a continuous cents-from-Sa value. Searches the active
+ *  target table -- rounding to the nearest 100 breaks entirely in just
+ *  intonation, where komal Ga sits at 315.6 cents. */
+function nearest(c, tbl) {
+  if (!isFinite(c) || Math.abs(c) > 6000) return null;
+  var base = Math.floor(c / 1200), best = null, o, i, ideal, dev;
+  for (o = base - 1; o <= base + 1; o++) {
+    for (i = 0; i < 12; i++) {
+      ideal = o * 1200 + tbl[i];
+      dev = c - ideal;
+      if (!best || Math.abs(dev) < Math.abs(best.cents)) best = { idx: i, octave: o, cents: dev };
+    }
+  }
+  return best;
+}
+function idealCents(idx, octave, tbl) { return octave * 1200 + tbl[idx]; }
+
+/* ------------------------------------------------------------- state ---- */
+var S = {
+  running:false, saHz:0, a4:440, tuning:'et', tol:20, winSize:2048, cycles:3,
+  fluteIdx:0, mode:'free', theme:'auto', droneVol:0.30, droneOn:false,
+  holdTarget:0, wake:null, agcWarned:false
+};
+var A = { raf:0, ctx:null, stream:null, src:null, scopeAn:null, detAn:null, hp:null, det:null, droneGain:null, droneTimer:null, droneStep:0 };
+
+var CAP = Math.ceil(HIST_SEC * 65);
+var H = {                                   // frame ring buffer, preallocated
+  t:new Float64Array(CAP), c:new Float64Array(CAP), cm:new Float64Array(CAP),
+  db:new Float64Array(CAP), cl:new Float32Array(CAP), v:new Uint8Array(CAP),
+  n:0
+};
+function hIdx(k) { return k % CAP; }        // k is absolute frame number
+function push(t, c, cm, db, cl, v) {
+  var i = hIdx(H.n);
+  H.t[i]=t; H.c[i]=c; H.cm[i]=cm; H.db[i]=db; H.cl[i]=cl; H.v[i]=v; H.n++;
+}
+var medBuf = [];
+function medianPush(x) {
+  medBuf.push(x); if (medBuf.length > MEDIAN_N) medBuf.shift();
+  var a = medBuf.slice().sort(function (p, q) { return p - q; });
+  return a[a.length >> 1];
+}
+
+var notes = [];            // completed notes this session
+var transitions = [];
+var cur = null;            // note under construction
+var seg = { state:'silent', run:0, center:0, pend:0, win:0, leaveSign:0, dBuf:[], transFrom:null, transStart:0, transPeak:0, dirSign:0, revs:0, lastD:0, dwell:{} };
+var live = { f:-1, cents:0, idx:0, oct:0, db:-90, cl:0, voiced:false, dispCents:0, dispIdx:-1, dispOct:0, labelRun:0, peak:0, clip:0 };
+var drill = { seq:[], pos:0, marks:[], holdMs:0, best:0, runs:[] };
+
+/* --------------------------------------------------------------- dom ---- */
+function $(id) { return document.getElementById(id); }
+var el = {};
+['gate','gateErr','gateFooter','live','startBtn','droneBtn','setBtn','settings','closeSet',
+ 'scope','ribbon','envelope','scopeMeta','ribbonMeta','envMeta','lockPill','scopeNote',
+ 'devBig','bigName','octName','hzVal','needle','centsBig','swaraCard','noteAge',
+ 'stSteady','stSteadySub','barSteady','stBreath','stBreathSub','barBreath',
+ 'stTone','stToneSub','barTone','stLevel','stLevelSub','barLevel',
+ 'coach','sessionMeta','clearBtn','drillBar','drillDetail','inputWarn','tagline',
+ 'saSelect','saHz','saHzHint','calibBtn','a4','tunET','tunJI','tol','tolHint',
+ 'cyc','cycHint','droneVol','wakeBtn'].forEach(function (k) { el[k] = $(k); });
+
+function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+var C = {};
+function readTheme() {
+  C.bg=css('--surface'); C.wave=css('--wave'); C.grid=css('--grid'); C.gridS=css('--grid-strong');
+  C.text=css('--text'); C.muted=css('--muted'); C.faint=css('--faint');
+  C.good=css('--good'); C.warn=css('--warn'); C.bad=css('--bad'); C.accent=css('--accent');
+  C.surface2=css('--surface-2');
+}
+
+/* ------------------------------------------------------- canvas setup --- */
+function mkCanvas(canvas) {
+  var ctx = canvas.getContext('2d', { alpha: false });
+  var view = { w:0, h:0, dpr:1 };
+  function fit() {
+    var r = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var pw = Math.max(1, Math.round(r.width * dpr)), ph = Math.max(1, Math.round(r.height * dpr));
+    // Assigning width/height clears the canvas and resets the transform even
+    // when the value is unchanged, so guard -- then always re-set the transform.
+    if (canvas.width !== pw || canvas.height !== ph) { canvas.width = pw; canvas.height = ph; }
+    view.dpr = dpr; view.w = pw / dpr; view.h = ph / dpr;
+    // setTransform, never scale(): scale() is cumulative and double-scales.
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  }
+  try { new ResizeObserver(fit).observe(canvas); } catch (e) { window.addEventListener('resize', fit); }
+  fit();
+  return { ctx:ctx, view:view, fit:fit };
+}
+function hairline(ctx, y, x0, x1, dpr) {
+  var yy = (Math.round(y * dpr) + 0.5) / dpr;
+  ctx.lineWidth = 1 / dpr; ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x1, yy); ctx.stroke();
+}
+var scope = null, ribbon = null, envv = null;
+
+/* =========================================================== AUDIO ====== */
+function describeMicError(e) {
+  var framed = window.self !== window.top;
+  var n = (e && e.name) || 'Error';
+  if (n === 'NotAllowedError' || n === 'SecurityError') {
+    return framed
+      ? { t:'This page cannot reach the microphone here',
+          m:'It is embedded in a frame that does not pass microphone access through. Open it in its own tab and it will work.', tab:true }
+      : { t:'Microphone blocked',
+          m:'Your browser or your operating system is refusing access. Click the mic icon in the address bar and allow it, then check your system privacy settings for this browser.' };
+  }
+  if (n === 'NotFoundError' || n === 'OverconstrainedError')
+    return { t:'No microphone found', m:'No input device is available. Plug one in or enable your built-in mic, then press Start again.' };
+  if (n === 'NotReadableError')
+    return { t:'The microphone is busy', m:'Another app is holding it — a call, a recorder, or another browser tab. Close that and try again.' };
+  if (n === 'AbortError')
+    return { t:'The microphone stopped responding', m:'Something interrupted the audio device. Try again, and reconnect it if it is external.' };
+  if (!window.isSecureContext || !navigator.mediaDevices)
+    return { t:'This page needs a secure connection', m:'Microphone access only works over https, or on localhost. Opening the .html file directly from disk will not work — serve it with, for example, python3 -m http.server 8000 and visit http://localhost:8000.' };
+  return { t:'Could not start listening', m:(e && e.message) || String(e) };
+}
+
+/** An embedded viewer usually does not delegate microphone permission, so say
+ *  so before the player presses Start rather than after it fails. */
+function micBlockedByFrame() {
+  if (window.self === window.top) return false;
+  try {
+    if (document.featurePolicy && document.featurePolicy.allowsFeature)
+      return !document.featurePolicy.allowsFeature('microphone');
+  } catch (e) {}
+  return true;
+}
+function showFrameNotice() {
+  var box = document.createElement('div');
+  box.className = 'err';
+  box.style.cssText = 'background:var(--warn-bg);color:var(--warn);max-width:440px';
+  var b = document.createElement('b');
+  b.textContent = 'Open this in its own tab to use your microphone';
+  var span = document.createElement('span');
+  span.textContent = ' This preview frame does not pass microphone access through, so Naad cannot hear you here. Everything else works the same once it is open on its own.';
+  var a = document.createElement('a');
+  a.href = location.href; a.target = '_blank'; a.rel = 'noopener';
+  a.textContent = 'Open Naad in a new tab \u2192';
+  a.style.cssText = 'display:inline-block;margin-top:10px;color:inherit;font-weight:600';
+  box.appendChild(b); box.appendChild(span);
+  box.appendChild(document.createElement('br')); box.appendChild(a);
+  el.gate.appendChild(box);
+  el.startBtn.textContent = 'Start listening';
+}
+
+function showGateError(info) {
+  el.gateErr.hidden = false;
+  el.gateErr.innerHTML = '<b></b><span></span>';
+  el.gateErr.firstChild.textContent = info.t;
+  el.gateErr.lastChild.textContent = ' ' + info.m;
+  if (info.tab) {
+    var a = document.createElement('a');
+    a.href = location.href; a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = 'Open in a new tab';
+    a.style.cssText = 'display:inline-block;margin-top:9px;color:inherit;font-weight:600';
+    el.gateErr.appendChild(document.createElement('br'));
+    el.gateErr.appendChild(a);
+  }
+}
+
+function start() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showGateError(describeMicError({ name:'SecurityError' })); return;
+  }
+  // One AudioContext for the life of the page: Chrome caps them per document.
+  if (!A.ctx) {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    try { A.ctx = new AC({ latencyHint:'interactive' }); } catch (e) {
+      try { A.ctx = new AC(); } catch (e2) { showGateError(describeMicError(e2)); return; }
+    }
+  }
+  // resume() must be called synchronously inside the gesture, BEFORE any await,
+  // or Safari has already dropped the transient activation. 'interrupted' is a
+  // real iOS state, so test for not-running rather than for 'suspended'.
+  if (A.ctx.state !== 'running') { try { A.ctx.resume(); } catch (e) {} }
+
+  el.startBtn.disabled = true;
+  el.startBtn.textContent = 'Starting…';
+
+  navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1
+      // Never {exact:false}: Safari does not implement two of these and would
+      // throw OverconstrainedError. Never request sampleRate: it can throw.
+    }
+  }).then(function (stream) {
+    A.stream = stream;
+    if (A.ctx.state !== 'running') { try { A.ctx.resume(); } catch (e) {} }
+
+    A.src = A.ctx.createMediaStreamSource(stream);   // keep a reference: Firefox
+                                                     // has collected this early
+    // Display tap: 35 Hz block only. Removes DC and rumble (without which the
+    // zero-crossing trigger dies outright) while still showing the real wave.
+    var dcHp = A.ctx.createBiquadFilter();
+    dcHp.type = 'highpass'; dcHp.frequency.value = 35; dcHp.Q.value = 0.7071;
+    A.scopeAn = A.ctx.createAnalyser(); A.scopeAn.fftSize = FFT_SIZE;
+    A.src.connect(dcHp); dcHp.connect(A.scopeAn);
+
+    // Detector tap: band-limited to the instrument. The highpass stays at
+    // 130 Hz — any higher and the weak low-register fundamental is attenuated
+    // until MPM latches onto the second harmonic and reports an octave up.
+    var hp = A.ctx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 130; hp.Q.value = 0.7071;
+    var lp = A.ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 5000; lp.Q.value = 0.7071;
+    A.detAn = A.ctx.createAnalyser(); A.detAn.fftSize = FFT_SIZE;
+    A.src.connect(hp); hp.connect(lp); lp.connect(A.detAn);
+    // Silent path to the destination. Some engines will not pull a graph that
+    // terminates in an analyser; gain 0 means this can never feed back.
+    var sink = A.ctx.createGain(); sink.gain.value = 0;
+    A.detAn.connect(sink); sink.connect(A.ctx.destination);
+
+    scopeBuf = new Float32Array(FFT_SIZE);
+    detBuf   = new Float32Array(FFT_SIZE);   // fftSize, NOT frequencyBinCount
+    A.det = createDetector(S.winSize);
+
+    var track = stream.getAudioTracks()[0];
+    var st = track.getSettings ? track.getSettings() : {};
+    if ((st.autoGainControl || st.noiseSuppression || st.echoCancellation) && track.applyConstraints) {
+      try {
+        track.applyConstraints({ echoCancellation:false, noiseSuppression:false, autoGainControl:false });
+        st = track.getSettings();
+      } catch (e) {}
+    }
+    var mangled = [];
+    if (st.autoGainControl)  mangled.push('automatic gain control');
+    if (st.noiseSuppression) mangled.push('noise suppression');
+    if (st.echoCancellation) mangled.push('echo cancellation');
+    if (mangled.length) {
+      el.inputWarn.hidden = false;
+      el.inputWarn.innerHTML = '<b>Your browser kept ' + mangled.join(' and ') + ' switched on.</b> ' +
+        'Naad asked for raw audio but this browser ignored it. Pitch and swara stay accurate; ' +
+        'the breath and volume readings will be flattened out. Chrome on macOS is the usual culprit — Firefox or Safari honour the request.';
+      S.agcWarned = true;
+    } else { el.inputWarn.hidden = true; }
+
+    S.running = true;
+    el.gate.hidden = true; el.gateFooter.hidden = true; el.live.hidden = false;
+    el.startBtn.disabled = false;
+    el.startBtn.textContent = 'Stop';
+    el.startBtn.classList.add('live');
+    resetAnalysis();
+    setTimeout(function () { scope.fit(); ribbon.fit(); envv.fit(); }, 30);
+    if (A.raf) cancelAnimationFrame(A.raf);
+    lastT = 0;
+    A.raf = requestAnimationFrame(loop);
+  }).catch(function (e) {
+    el.startBtn.disabled = false;
+    el.startBtn.textContent = 'Start listening';
+    showGateError(describeMicError(e));
+  });
+}
+
+function stop() {
+  S.running = false;
+  if (A.raf) { cancelAnimationFrame(A.raf); A.raf = 0; }
+  if (A.stream) { A.stream.getTracks().forEach(function (t) { t.stop(); }); A.stream = null; }
+  if (A.src) { try { A.src.disconnect(); } catch (e) {} A.src = null; }
+  droneOff();
+  el.startBtn.textContent = 'Start listening';
+  el.startBtn.classList.remove('live');
+  el.gate.hidden = false; el.gateFooter.hidden = false; el.live.hidden = true;
+  el.gateErr.hidden = true;
+}
+
+var scopeBuf = null, detBuf = null;
+
+/* =========================================================== DRONE ====== */
+// A tanpura is four strings plucked in a slow cycle, each ringing on into the
+// next. Pa · Sa · Sa · lower-Sa, with a long decay and a touch of detune.
+function droneOn() {
+  if (!A.ctx) return;
+  if (A.ctx.state !== 'running') { try { A.ctx.resume(); } catch (e) {} }
+  if (!A.droneGain) {
+    A.droneGain = A.ctx.createGain();
+    A.droneGain.connect(A.ctx.destination);
+  }
+  A.droneGain.gain.setTargetAtTime(S.droneVol, A.ctx.currentTime, 0.25);
+  A.droneStep = 0;
+  var period = 1.15;
+  function pluck() {
+    if (!S.droneOn || !A.ctx) return;
+    var ratios = [1.5, 1.0, 1.0, 0.5];      // Pa, Sa, Sa, mandra Sa
+    var f = S.saHz * ratios[A.droneStep % 4] * 0.5;   // an octave below the flute
+    A.droneStep++;
+    var t0 = A.ctx.currentTime + 0.02;
+    var g = A.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.5, t0 + 0.035);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 3.4);
+    g.connect(A.droneGain);
+    var partials = [1, 2, 3, 4, 5, 6, 7, 8];
+    var amps     = [1, .62, .40, .30, .20, .14, .09, .055];
+    for (var i = 0; i < partials.length; i++) {
+      var o = A.ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.value = f * partials[i];
+      o.detune.value = (i % 2 ? 3 : -3) * (i * 0.6);   // the jivari shimmer
+      var og = A.ctx.createGain();
+      og.gain.value = amps[i] * 0.16;
+      o.connect(og); og.connect(g);
+      o.start(t0); o.stop(t0 + 3.6);
+    }
+    A.droneTimer = setTimeout(pluck, period * 1000);
+  }
+  pluck();
+}
+function droneOff() {
+  S.droneOn = false;
+  if (A.droneTimer) { clearTimeout(A.droneTimer); A.droneTimer = null; }
+  if (A.droneGain && A.ctx) A.droneGain.gain.setTargetAtTime(0.0001, A.ctx.currentTime, 0.18);
+  el.droneBtn.setAttribute('aria-pressed', 'false');
+}
+
+/* ======================================================== ANALYSIS ====== */
+function resetAnalysis() {
+  H.n = 0; medBuf.length = 0; notes.length = 0; transitions.length = 0; cur = null;
+  seg = { state:'silent', run:0, center:0, pend:0, win:0, leaveSign:0, dBuf:[], transFrom:null, transStart:0, transPeak:0, dirSign:0, revs:0, lastD:0, dwell:{} };
+  live.dispIdx = -1; live.labelRun = 0; live.dispCents = 0;
+  drill.pos = 0; drill.marks = []; drill.holdMs = 0; drill.runs = [];
+  el.coach.innerHTML = '<div class="empty">Play a note and hold it for at least half a second. Notes you finish show up here with what went well and what to fix.</div>';
+  renderDrill();
+}
+
+function stats(arr) {
+  var n = arr.length; if (!n) return { mean:0, sd:0 };
+  var s = 0, i;
+  for (i = 0; i < n; i++) s += arr[i];
+  var mu = s / n, v = 0;
+  for (i = 0; i < n; i++) { var d = arr[i] - mu; v += d * d; }
+  return { mean:mu, sd:Math.sqrt(v / n) };
+}
+function slope(ts, ys) {                      // least squares, units of y per second
+  var n = ts.length; if (n < 3) return 0;
+  var st = 0, sy = 0, stt = 0, sty = 0, i;
+  for (i = 0; i < n; i++) { st += ts[i]; sy += ys[i]; stt += ts[i] * ts[i]; sty += ts[i] * ys[i]; }
+  var den = n * stt - st * st;
+  return Math.abs(den) < 1e-9 ? 0 : (n * sty - st * sy) / den;
+}
+/** Goertzel magnitude of a detrended series at frequency f. */
+function goertzel(ys, dt, f) {
+  var w = 2 * Math.PI * f * dt, cw = Math.cos(w), coeff = 2 * cw, s0 = 0, s1 = 0, s2 = 0;
+  for (var i = 0; i < ys.length; i++) { s0 = ys[i] + coeff * s1 - s2; s2 = s1; s1 = s0; }
+  var re = s1 - s2 * cw, im = s2 * Math.sin(w);
+  return 2 * Math.sqrt(re * re + im * im) / ys.length;
+}
+/** Separate real vibrato (periodic, 3.5-9 Hz) from random wobble. */
+function vibrato(ts, cs) {
+  var n = cs.length;
+  if (n < 12) return { rate:0, depth:0, share:0 };
+  var k = slope(ts, cs), m = stats(cs).mean, t0 = stats(ts).mean;
+  var d = new Float64Array(n), i, tot = 0;
+  for (i = 0; i < n; i++) { d[i] = cs[i] - (m + k * (ts[i] - t0)); tot += d[i] * d[i]; }
+  tot = Math.sqrt(tot / n);
+  var dt = (ts[n - 1] - ts[0]) / (n - 1);
+  if (!(dt > 0)) return { rate:0, depth:0, share:0 };
+  var bestF = 0, bestA = 0;
+  for (var f = 3.5; f <= 9.01; f += 0.25) {
+    var a = goertzel(d, dt, f);
+    if (a > bestA) { bestA = a; bestF = f; }
+  }
+  var rms = bestA / Math.SQRT2;                       // sinusoid amplitude -> rms
+  return { rate:bestF, depth:bestA * 2, share: tot > 1e-6 ? Math.min(1, rms / tot) : 0 };
+}
+
+function noteFrames(note) {
+  var out = { t:[], c:[], db:[], cl:[] };
+  for (var k = note.k0; k < note.k1; k++) {
+    var i = hIdx(k);
+    if (!H.v[i]) continue;
+    out.t.push(H.t[i]); out.c.push(H.cm[i]); out.db.push(H.db[i]); out.cl.push(H.cl[i]);
+  }
+  return out;
+}
+
+/** Everything we can say about one finished note. */
+function analyseNote(note) {
+  var F = noteFrames(note), n = F.t.length;
+  if (n < 4) return null;
+  var t0 = F.t[0], dur = F.t[n - 1] - t0;
+  note.dur = dur;
+
+  var i, sustainDb, peakDb = -200, peakAt = 0;
+  var dbs = F.db;
+  // sustain region: past the onset transient, short of the release
+  var sStart = 0, sEnd = n;
+  for (i = 0; i < n; i++) { if (F.t[i] - t0 >= ATTACK_IGNORE) { sStart = i; break; } }
+  var tailCut = Math.max(t0 + ATTACK_IGNORE, F.t[n - 1] - 0.09);
+  for (i = n - 1; i > sStart; i--) { if (F.t[i] <= tailCut) { sEnd = i + 1; break; } }
+  // A short note has no room for a 180 ms onset guard. Fall back to the middle
+  // of it rather than to the whole note, which would drag the attack ramp into
+  // every statistic.
+  if (sEnd - sStart < 4) { sStart = Math.floor(n * 0.30); sEnd = Math.max(sStart + 2, Math.floor(n * 0.92)); }
+
+  var sdb = dbs.slice(sStart, sEnd), sc = F.c.slice(sStart, sEnd), st = F.t.slice(sStart, sEnd);
+  var sorted = sdb.slice().sort(function (a, b) { return a - b; });
+  sustainDb = sorted[sorted.length >> 1];
+
+  // Attack and overshoot come off the 5.3 ms block envelope, not the 43 ms
+  // frame RMS: the frame RMS is a moving average, so every onset would measure
+  // the window rather than the player.
+  var EN = envRange(t0 - 0.06, t0 + Math.min(0.45, Math.max(0.2, dur)));
+  var attackMs = NaN, overshoot = 0, aFrom = -1, aTo = -1;
+  if (EN.t.length >= 6) {
+    for (i = 0; i < EN.t.length; i++) {
+      if (aFrom < 0 && EN.db[i] > sustainDb - 20) aFrom = i;
+      if (aFrom >= 0 && EN.db[i] > sustainDb - 3) { aTo = i; break; }
+    }
+    if (aFrom >= 0 && aTo >= aFrom) attackMs = (EN.t[aTo] - EN.t[aFrom]) * 1000;
+    for (i = 0; i < EN.t.length; i++) if (EN.t[i] - t0 < 0.30 && EN.db[i] > peakDb) { peakDb = EN.db[i]; peakAt = EN.t[i] - t0; }
+  } else {
+    for (i = 0; i < n && F.t[i] - t0 < 0.30; i++) if (dbs[i] > peakDb) { peakDb = dbs[i]; peakAt = F.t[i] - t0; }
+    for (i = 0; i < n; i++) { if (aFrom < 0 && dbs[i] > sustainDb - 20) aFrom = i;
+                              if (aFrom >= 0 && dbs[i] > sustainDb - 3) { aTo = i; break; } }
+    if (aFrom >= 0 && aTo >= aFrom) attackMs = (F.t[aTo] - F.t[aFrom]) * 1000;
+  }
+  overshoot = peakDb - sustainDb;
+
+  // Start-of-note pitch: over-blowing the attack makes a flute go sharp.
+  var headC = [], tailC = [];
+  for (i = 0; i < n && F.t[i] - t0 < 0.14; i++) headC.push(F.c[i]);
+  var cS = stats(sc), cHead = stats(headC);
+  // Compare the head with the EARLY sustain, not the whole-note mean: otherwise
+  // a note that sags 20 cents at the end makes its own opening look sharp.
+  var earlyEnd = sStart + Math.max(3, Math.floor((sEnd - sStart) * 0.4));
+  var cEarly = stats(F.c.slice(sStart, earlyEnd));
+  var attackCents = headC.length ? cHead.mean - cEarly.mean : 0;
+
+  var dbS = stats(sdb);
+  var vib = vibrato(st, sc);
+  // Remove the vibrato's own contribution before calling the rest "wobble".
+  var vibSd = (vib.share > 0.5 && vib.depth > 16) ? (vib.depth / 2) / Math.SQRT2 : 0;
+  var wobble = Math.sqrt(Math.max(0, cS.sd * cS.sd - vibSd * vibSd));
+
+  // A trend line needs a real sustain under it. Three points off a 200 ms
+  // alankar note produce numbers like -350 dB/s, which then poison the score.
+  var sustainSpan = st.length > 1 ? (st[st.length - 1] - st[0]) : 0;
+  var slopeOk = sustainSpan >= 0.6 && st.length >= 12;
+  var dbSlope = slopeOk ? slope(st, sdb) : 0;
+  var cSlope  = slopeOk ? slope(st, sc)  : 0;
+
+  // Release character
+  var relDrop = dbs[n - 1] - sustainDb;
+  var release = relDrop < -10 ? 'tapered' : (relDrop < -4 ? 'eased' : 'cut');
+
+  var clMean = stats(F.cl).mean;
+
+  // ---- scoring ------------------------------------------------------------
+  var tgt = idealCents(note.idx, note.oct, S.tblRef);
+  var meanDev = cS.mean - tgt;
+  var sInt   = clamp(100 - Math.abs(meanDev) * (100 / 45), 0, 100);
+  var sSteady= clamp(100 - wobble * 5.5, 0, 100);
+  var sBreath= clamp(100 - dbS.sd * 11 - Math.max(0, -dbSlope - 1.2) * 7, 0, 100);
+  var sTone  = clamp((clMean - 0.32) / 0.63 * 100, 0, 100);
+  var sAttack= clamp(100 - Math.max(0, overshoot - 3.5) * 9
+                         - (isFinite(attackMs) ? Math.max(0, 35 - attackMs) * 1.1 : 0)
+                         - (isFinite(attackMs) ? Math.max(0, attackMs - 260) * 0.14 : 0), 0, 100);
+  var score = Math.round(sInt * 0.30 + sSteady * 0.24 + sBreath * 0.24 + sTone * 0.10 + sAttack * 0.12);
+
+  note.a = {
+    dur:dur, meanDev:meanDev, devSd:cS.sd, wobble:wobble,
+    attackMs:attackMs, overshoot:overshoot, attackCents:attackCents,
+    sustainDb:sustainDb, dbSd:dbS.sd, dbSlope:dbSlope, centsSlope:cSlope,
+    vibRate:vib.rate, vibDepth:vib.depth, vibShare:vib.share,
+    release:release, clarity:clMean, score:score, sustainSpan:sustainSpan, slopeOk:slopeOk,
+    parts:{ intonation:sInt, steady:sSteady, breath:sBreath, tone:sTone, attack:sAttack }
+  };
+  return note.a;
+}
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+
+/* --------------------------------------------- fast envelope (attack) ---
+   RMS over the detector's 2048-sample window is a 43 ms moving average, so
+   even an instantaneous onset takes ~21 ms to register — attack time read off
+   it would measure the window, not the player. This second path takes RMS over
+   256-sample blocks (5.3 ms) straight out of the scope buffer, which resolves a
+   real bansuri attack (10–200 ms) without needing an AudioWorklet (whose
+   Blob-URL module is blocked by the CSP a hosted page runs under).            */
+var ENV_BLOCK = 256, EN_PER_FRAME = 4, ECAP = 16384;
+var E = { t:new Float64Array(ECAP), db:new Float32Array(ECAP), n:0 };
+function ePush(t, db) { var i = E.n % ECAP; E.t[i] = t; E.db[i] = db; E.n++; }
+function eCollect(buf, audioNow, sr) {
+  for (var b = EN_PER_FRAME - 1; b >= 0; b--) {
+    var end = buf.length - b * ENV_BLOCK, s = 0;
+    for (var i = end - ENV_BLOCK; i < end; i++) { var v = buf[i]; s += v * v; }
+    var rms = Math.sqrt(s / ENV_BLOCK);
+    ePush(audioNow - (b * ENV_BLOCK + ENV_BLOCK / 2) / sr, toDb(rms));
+  }
+}
+function toDb(rms) { return Math.max(-140, 20 * Math.log10(Math.max(rms, 1e-7))); }
+function envRange(t0, t1, maxPts) {
+  var ts = [], ds = [], lo = Math.max(0, E.n - ECAP), k, i;
+  if (E.n === 0) return { t:ts, db:ds };
+  var start = E.n - 1;
+  while (start > lo && E.t[start % ECAP] > t0) start--;      // seek, do not scan
+  var span = E.n - start;
+  var stride = maxPts && span > maxPts ? Math.ceil(span / maxPts) : 1;
+  for (k = start; k < E.n; k += stride) {
+    i = k % ECAP;
+    if (E.t[i] > t1) break;
+    if (E.t[i] >= t0) { ts.push(E.t[i]); ds.push(E.db[i]); }
+  }
+  return { t:ts, db:ds };
+}
+
+/* -------------------------------------------------- note segmentation --- */
+function swaraAt(k) { var i = hIdx(k); return nearest(H.cm[i], S.tblRef); }
+
+function beginNote(k, t, centre) {
+  var nr = nearest(centre, S.tblRef);
+  cur = { k0:k, k1:k, t0:t, idx:nr ? nr.idx : 0, oct:nr ? nr.octave : 0, centre:centre, crack:false };
+}
+function endNote(k, t, reason) {
+  if (!cur) return;
+  // If the note already closed because the pitch left its centre, keep THAT
+  // frame as its end. Overwriting it with the arrival frame collapses the
+  // transition window to nothing and every glide measures 0 ms.
+  if (!cur.left) { cur.k1 = k; cur.t1 = t; }
+  cur.end = reason;
+  var span = (cur.t1 != null ? cur.t1 : t) - cur.t0;
+  var a = (span >= MIN_NOTE) ? analyseNote(cur) : null;
+  if (a) {
+    var nr = nearest(stats(noteFrames(cur).c).mean, S.tblRef);
+    if (nr) { cur.idx = nr.idx; cur.oct = nr.octave; analyseNote(cur); }
+    var prev = notes.length ? notes[notes.length - 1] : null;
+    notes.push(cur);
+    var tr = prev ? analyseTransition(prev, cur) : null;
+    if (tr) transitions.push(tr);
+    onNoteDone(cur, tr);
+  }
+  cur = null;
+}
+
+function stepSegmenter(k, t, voiced, c) {
+  var i = hIdx(k);
+  if (!voiced) {
+    seg.run = seg.state === 'silent' ? seg.run : seg.run + 1;
+    if (seg.state !== 'silent' && seg.run >= 4) {          // ~65 ms of no tone
+      endNote(k, t, 'breath');
+      seg.state = 'silent'; seg.run = 0;
+    }
+    return;
+  }
+  if (seg.state === 'silent') {
+    seg.run++;
+    if (seg.run >= 3) {                                     // ~50 ms to latch on
+      seg.state = 'settling'; seg.center = c; seg.run = 0; seg.pend = 0; seg.win = 0; seg.dBuf = [];
+      beginNote(k - 2, H.t[hIdx(Math.max(0, k - 2))], c);
+    }
+    return;
+  }
+  seg.run = 0;
+
+  if (seg.state === 'settling') {
+    // Settle on a MAJORITY of recent frames being near the centre, not on a
+    // consecutive run. A wide slow ornament (andolan, deep vibrato) never
+    // gives five consecutive in-band frames, and demanding them meant such a
+    // note never started at all.
+    seg.center = seg.center * 0.7 + c * 0.3;
+    seg.win++;
+    if (Math.abs(c - seg.center) < 50) seg.pend++;
+    if (seg.win >= 8) {
+      if (seg.pend >= 4) { seg.state = 'stable'; seg.pend = 0; seg.win = 0; seg.dBuf = []; }
+      else { seg.pend = 0; seg.win = 0; }        // keep listening
+    }
+    return;
+  }
+
+  if (seg.state === 'stable') {
+    var d = c - seg.center;
+    // An octave crack is a detector/embouchure event, not a new note: it snaps
+    // ~1200 cents away and back. Never let it start a note.
+    if (Math.abs(Math.abs(d) - 1200) < 90) { if (cur) cur.crack = true; return; }
+    // Judge the departure on a 100 ms running MEAN, not on single frames.
+    // A symmetric ornament — vibrato, kampan, a wide slow andolan — averages
+    // back to its own centre no matter how deep it swings, while a real move
+    // to another swara shifts the mean straight away. Single-frame tests could
+    // not tell a 120-cent andolan from a semitone step, and the median filter
+    // flattens the peaks, which holds them past any fixed threshold.
+    seg.dBuf.push(d); if (seg.dBuf.length > 6) seg.dBuf.shift();
+    var dm = 0; for (var q = 0; q < seg.dBuf.length; q++) dm += seg.dBuf[q];
+    dm /= seg.dBuf.length;
+    if (seg.dBuf.length >= 6 && Math.abs(dm) > LEAVE_CENTS) {
+      var sgn = dm > 0 ? 1 : -1;
+      if (seg.leaveSign !== sgn) { seg.leaveSign = sgn; seg.pend = 1; }
+      else seg.pend++;
+      if (seg.pend >= 2) {
+        seg.state = 'moving'; seg.pend = 0;
+        seg.transFrom = cur; seg.transStart = t; seg.transPeak = c;
+        seg.dirSign = d > 0 ? 1 : -1; seg.revs = 0; seg.lastD = d; seg.dwell = {};
+        if (cur) { cur.k1 = k - 3; cur.t1 = H.t[hIdx(Math.max(0, k - 3))]; cur.left = true; }
+      }
+    } else { seg.pend = 0; seg.leaveSign = 0; seg.center = seg.center * 0.96 + c * 0.04; }
+    return;
+  }
+
+  if (seg.state === 'moving') {
+    // Never let this state trap the note. If the pitch never settles inside a
+    // swara band — a wide ornament, a chromatic wander, a bad room — close the
+    // note and re-settle wherever we now are, rather than analysing nothing.
+    if (t - seg.transStart > 1.0) {
+      if (cur) endNote(k, t, 'moved');
+      seg.state = 'settling'; seg.center = c; seg.pend = 0; seg.win = 0;
+      seg.dBuf = []; seg.leaveSign = 0;
+      beginNote(k, t, c);
+      return;
+    }
+    var dd = c - seg.lastD;
+    if (Math.sign(c - seg.center) !== 0 && Math.sign(dd) !== 0 && Math.sign(dd) !== seg.dirSign && Math.abs(dd) > 6) seg.revs++;
+    if (Math.abs(dd) > 6) seg.dirSign = Math.sign(dd);
+    seg.lastD = c;
+    if ((seg.dirSign > 0 && c > seg.transPeak) || (seg.dirSign < 0 && c < seg.transPeak)) seg.transPeak = c;
+    var nr = nearest(c, S.tblRef);
+    if (nr) {
+      var key = nr.octave + ':' + nr.idx;
+      if (Math.abs(nr.cents) < 30) seg.dwell[key] = (seg.dwell[key] || 0) + 1;
+      if (Math.abs(nr.cents) < ARRIVE_CENTS) {
+        seg.pend++;
+        if (seg.pend >= 4) {
+          // the previous note closed when we left it; open the new one here
+          if (cur) { endNote(k - 4, t, 'moved'); }
+          seg.state = 'stable'; seg.pend = 0; seg.center = c; seg.dBuf = []; seg.leaveSign = 0;
+          var kb = Math.max(0, k - 4);
+          beginNote(kb, H.t[hIdx(kb)], c);
+          if (cur) cur.fromGlide = true;
+          if (notes.length) notes[notes.length - 1].transOut = { peak:seg.transPeak, start:seg.transStart, revs:seg.revs, dwell:seg.dwell };
+        }
+      } else seg.pend = 0;
+    }
+  }
+}
+
+/* ------------------------------------------------------- transitions --- */
+function analyseTransition(from, to) {
+  if (!from.a || !to.a) return null;
+  var tStart = from.t1, tEnd = to.t0;
+  var gap = 0, dip = 0, minDb = 999, dwell = {}, revs = 0, lastC = null, dir = 0, peak = null;
+  var fromC = from.a.meanDev + idealCents(from.idx, from.oct, S.tblRef);
+  var toC   = to.a.meanDev   + idealCents(to.idx,   to.oct,   S.tblRef);
+  var sign  = toC > fromC ? 1 : -1;
+  var k, i, seen = 0;
+
+  // Measure the glide directly off the pitch trace rather than off the note
+  // boundaries: the segmenter only notices a departure after LEAVE_CENTS plus
+  // three confirmation frames, which would add ~100 ms to every reading.
+  var kA = Math.max(0, from.k1 - 8), kB = Math.min(H.n - 1, to.k0 + 8);
+  var departK = -1, arriveK = -1;
+  for (k = kA; k <= kB; k++) {
+    i = hIdx(k); if (!H.v[i]) continue;
+    if (Math.abs(H.cm[i] - fromC) <= 25) departK = k;
+    else if (departK >= 0) break;
+  }
+  for (k = departK >= 0 ? departK : kA; k <= kB; k++) {
+    i = hIdx(k); if (!H.v[i]) continue;
+    if (Math.abs(H.cm[i] - toC) <= 25) { arriveK = k; break; }
+  }
+  if (departK < 0 || arriveK < 0 || arriveK <= departK) { departK = from.k1; arriveK = to.k0; }
+
+  var guard = Math.max(3, Math.round(0.25 * (arriveK - departK)));
+  for (k = departK; k <= arriveK; k++) {
+    i = hIdx(k);
+    if (!H.v[i]) { gap++; continue; }
+    seen++;
+    // The dip must come from the middle of the move. Including the ends catches
+    // the previous note's release or the next note's attack ramp, and reads a
+    // clean meend or an ordinary re-articulation as a broken note.
+    if (k >= departK + guard && k <= arriveK - guard && H.db[i] < minDb) minDb = H.db[i];
+    var c = H.cm[i];
+    if (peak === null || (sign > 0 ? c > peak : c < peak)) peak = c;
+    var nr = nearest(c, S.tblRef);
+    if (nr && Math.abs(nr.cents) < 30) {
+      var key = nr.octave + ':' + nr.idx;
+      if (key !== (from.oct + ':' + from.idx) && key !== (to.oct + ':' + to.idx)) dwell[key] = (dwell[key] || 0) + 1;
+    }
+    // Count only substantial reversals: a 6-cent threshold turns the vibrato
+    // riding on top of a meend into a dozen fake "hesitations".
+    if (lastC !== null) { var d = c - lastC; if (Math.abs(d) > 25) { if (dir && Math.sign(d) !== dir) revs++; dir = Math.sign(d); } }
+    lastC = c;
+  }
+  var dtFrame = 1 / 60;
+  var glideMs = Math.max(0, (H.t[hIdx(arriveK)] - H.t[hIdx(departK)]) * 1000);
+  var gapMs = gap * dtFrame * 1000;
+  dip = minDb < 900 ? from.a.sustainDb - minDb : 0;
+  var overshoot = peak !== null ? Math.max(0, (peak - toC) * sign) : 0;
+  var interval = toC - fromC;
+  var semis = Math.round(interval / 100);
+  var intervalErr = interval - (idealCents(to.idx, to.oct, S.tblRef) - idealCents(from.idx, from.oct, S.tblRef));
+
+  var passing = null, passN = 0;
+  for (var kk in dwell) if (dwell[kk] > passN) { passN = dwell[kk]; passing = kk; }
+  var passMs = passN * dtFrame * 1000;
+
+  var cls, ornament = false;
+  if (gapMs >= 350)                       cls = 'separate';   // a breath pause
+  else if (gapMs >= 55 || dip >= 9)       cls = 'broken';
+  else if (passMs >= 55)                  cls = 'blipped';
+  else if (overshoot > 40)                cls = 'overshot';
+  else if (revs >= 3)                     cls = 'hesitant';
+  else if (glideMs <= 80)                 cls = 'crisp';
+  else if (glideMs <= 260)              { cls = 'meend'; ornament = true; }
+  else                                    cls = 'smeared';
+
+  return {
+    from:from, to:to, glideMs:glideMs, gapMs:gapMs, dip:dip, overshoot:overshoot,
+    interval:interval, semis:semis, intervalErr:intervalErr, revs:revs,
+    passing:passing, passMs:passMs, cls:cls, ornament:ornament
+  };
+}
+
+/* ------------------------------------------------------------- coach --- */
+function band(v, cuts) { for (var i = 0; i < cuts.length; i++) if (v < cuts[i]) return i; return cuts.length; }
+function swName(idx) { return SWARAS[idx].name; }
+function fmt(v, d) { return (Math.round(v * Math.pow(10, d || 0)) / Math.pow(10, d || 0)).toFixed(d || 0); }
+
+function coachLines(note, tr) {
+  var a = note.a, out = [], dur = a.dur;
+  var nm = swName(note.idx);
+  // A regular oscillation is an ornament — vibrato, kampan, andolan — however
+  // deep it is. Only its RATE or its irregularity can be a fault. Faulting on
+  // depth scolds the player for a skill.
+  var vibReal = a.vibShare > 0.5 && a.vibDepth > 16;
+
+  // --- attack --------------------------------------------------------------
+  // Only when the note actually started: a note reached through a glide has no
+  // onset, and its first frames are the tail of the slide, not an attack.
+  // A note carrying vibrato has no meaningful "opening pitch": the 140 ms head
+  // window catches an arbitrary part of the cycle, so judging it is noise.
+  if (note.fromGlide) { /* no attack to judge */ }
+  else if (vibReal && a.overshoot < 4.5) { /* opening pitch is unreadable under vibrato */ }
+  else if (a.overshoot >= 4.5 && a.attackCents >= 15)
+    out.push(['bad', 'That ' + nm + ' arrived with a shove — ' + fmt(a.overshoot,1) + ' dB louder than the body of the note and about ' + fmt(a.attackCents,0) + ' cents sharp before it settled. Start it like the beginning of a sigh: let the air move first and the tone appear out of it.']);
+  else if (a.overshoot >= 4.5)
+    out.push(['warn', 'You punched the start — the first moment was ' + fmt(a.overshoot,1) + ' dB above the rest. Begin on a whispered "hoo" rather than a "too".']);
+  else if (a.attackCents >= 15)
+    out.push(['warn', 'The opening sat about ' + fmt(a.attackCents,0) + ' cents sharp before it came down to centre. That is breath pressure, not fingering — start a shade gentler.']);
+  else if (a.attackCents <= -18)
+    out.push(['warn', 'You slid up into that one from underneath. Hear the swara before you blow, so the first sound is already the note.']);
+  else if (isFinite(a.attackMs) && a.attackMs < 10 && a.overshoot < 2.5 && dur > 0.5 && !note.fromGlide)
+    out.push(['warn', 'That note switched on rather than bloomed. On a bansuri the tone should grow out of the air — ease the very first moment.']);
+  else if (isFinite(a.attackMs) && a.attackMs > 220 && a.overshoot < 1.5)
+    out.push(['warn', 'There was about ' + fmt(a.attackMs,0) + ' ms of air before the tone spoke. Narrow the lip opening slightly so the note starts sooner.']);
+  if (note.crack)
+    out.push(['bad', 'The note cracked into the octave on the way in. Aim the air a little further down across the hole and open the lips rather than blowing harder.']);
+
+  // --- the body -----------------------------------------------------------
+  if (dur >= 0.6) {
+    if (a.wobble <= 5 && a.dbSd <= 1.2 && dur >= 4)
+      out.push(['good', fmt(dur,1) + ' seconds and the pitch never moved more than a few cents. That is a real long note.']);
+    else if (a.wobble <= 5 && a.dbSd <= 1.2)
+      out.push(['good', 'Held dead centre — ±' + fmt(a.wobble,1) + ' cents and the volume barely moved.']);
+    else if (a.wobble > 20)
+      out.push(['bad', 'That note never settled on a centre — it wandered ±' + fmt(a.wobble,0) + ' cents. Check the finger pads are covering fully; a hole that is nine-tenths closed makes the pitch drift like this.']);
+    else if (a.wobble > 10)
+      out.push(['warn', 'The pitch was a little restless, ±' + fmt(a.wobble,0) + ' cents through the hold.']);
+    if (vibReal && a.vibRate > 7.5)
+      out.push(['warn', 'The oscillation is fast — ' + fmt(a.vibRate,1) + ' times a second. That is usually the air stream fluttering rather than a shaped vibrato. Play it at half the volume and see if it settles.']);
+    else if (vibReal && a.vibRate < 3.5)
+      out.push(['', 'A slow ' + fmt(a.vibRate,1) + ' Hz oscillation, ' + fmt(a.vibDepth,0) + ' cents wide. If that is andolan, good; if not, even out the breath.']);
+    else if (vibReal && a.vibShare < 0.62)
+      out.push(['warn', 'The wobble is not quite regular — it is drifting rather than shaped. Aim for an even pulse or none at all.']);
+    else if (vibReal)
+      out.push(['', 'Vibrato at ' + fmt(a.vibRate,1) + ' Hz, ' + fmt(a.vibDepth,0) + ' cents wide — read as intentional, so it is not counted against steadiness.']);
+    if (a.dbSd > 2.5 && a.wobble < 10)
+      out.push(['warn', 'The pitch held nicely but the volume pulsed by ±' + fmt(a.dbSd,1) + ' dB. Think of the breath as one unbroken line rather than a series of pushes.']);
+  }
+
+  // --- the ending: the fade the player asked about ------------------------
+  if (dur >= 1.2 && a.slopeOk) {
+    var totalDrop = a.dbSlope * dur, totalDrift = a.centsSlope * dur;
+    // Running out of breath and a deliberate diminuendo look identical in
+    // volume alone. What separates them is whether the PITCH held.
+    var pitchHeld = Math.abs(totalDrift) <= 8;
+    if (totalDrop <= -8 && totalDrift <= -12)
+      out.push(['bad', 'This is the one to fix: over ' + fmt(dur,1) + ' s the note lost ' + fmt(-totalDrop,1) + ' dB and sagged ' + fmt(-totalDrift,0) + ' cents flat at the same time. You ran out of breath rather than finishing the note. Take a fuller breath and stop a second earlier than you think you need to.']);
+    else if (totalDrop <= -6 && pitchHeld)
+      out.push(['good', 'You brought that down ' + fmt(-totalDrop,1) + ' dB and the pitch never moved. A diminuendo that does not go flat is the hardest thing on the instrument.']);
+    else if (totalDrop <= -8 && a.dbSlope <= -3)
+      out.push(['warn', 'The volume fell away ' + fmt(-totalDrop,1) + ' dB across the note — about ' + fmt(-a.dbSlope,1) + ' dB every second. Aim to finish with air still in reserve.']);
+    else if (totalDrift <= -12 && totalDrop > -4)
+      out.push(['warn', 'The volume held but the pitch sagged ' + fmt(-totalDrift,0) + ' cents by the end. That is the embouchure rolling inward, not the breath — keep the lip plate where it started.']);
+    else if (totalDrift >= 12)
+      out.push(['warn', 'The pitch climbed ' + fmt(totalDrift,0) + ' cents as you held it — you are squeezing harder as the breath gets shorter.']);
+    else if (Math.abs(totalDrop) <= 3 && Math.abs(totalDrift) <= 8 && a.release === 'tapered')
+      out.push(['good', 'That fade is right — the note got quieter without getting flatter. Hardest thing on the instrument.']);
+    if (a.release === 'cut' && dur > 2.5 && note.end === 'breath' && a.score < 85)
+      out.push(['', 'The note was cut off rather than released. Let the air taper over the last half second.']);
+  }
+
+  // --- tone ---------------------------------------------------------------
+  if (a.clarity < 0.55)
+    out.push(['warn', 'More air than tone in that one. Roll the flute a few degrees toward you and narrow the lip opening so the stream strikes the far edge of the hole.']);
+  else if (a.clarity > 0.95 && dur > 1)
+    out.push(['good', 'Clean, focused tone — very little air in it.']);
+
+  // --- intonation ---------------------------------------------------------
+  if (Math.abs(a.meanDev) > S.tol) {
+    var dir = a.meanDev > 0 ? 'sharp' : 'flat';
+    out.push([Math.abs(a.meanDev) > S.tol * 2 ? 'bad' : 'warn',
+      'Centred ' + fmt(Math.abs(a.meanDev),0) + ' cents ' + dir + ' of ' + nm + '.' +
+      (Math.abs(a.meanDev) > 25 ? ' If every note reads ' + dir + ', the flute is cold or the reference is off rather than your breath.' : '')]);
+  }
+
+  // --- how you got here ---------------------------------------------------
+  if (tr) {
+    var f = swName(tr.from.idx), t2 = swName(tr.to.idx);
+    if (tr.cls === 'separate') { /* they stopped for breath; that is not a fault */ }
+    else if (tr.cls === 'broken' && tr.gapMs >= 55)
+      out.push(['bad', 'The air stopped between ' + f + ' and ' + t2 + ' — a ' + fmt(tr.gapMs,0) + ' ms break. The fingers can move without the breath pausing; keep the air running underneath.']);
+    else if (tr.cls === 'broken')
+      out.push(['bad', 'The tone dropped ' + fmt(tr.dip,0) + ' dB between ' + f + ' and ' + t2 + '. The air did not quite stop, but the note broke. Keep the breath level and let only the fingers move.']);
+    else if (tr.cls === 'blipped' && tr.passing)
+      out.push(['bad', 'Going ' + f + ' to ' + t2 + ' there was a flash of ' + swName(parseInt(tr.passing.split(':')[1], 10)) + ' in between — the fingers are not lifting together. Practise just that move at half speed.']);
+    else if (tr.cls === 'overshot')
+      out.push(['warn', 'You overshot ' + t2 + ' by about ' + fmt(tr.overshoot,0) + ' cents and came back. Aim straight at the note instead of past it.']);
+    else if (tr.cls === 'hesitant')
+      out.push(['warn', 'That change wavered on the way — the pitch turned back on itself before it landed on ' + t2 + '.']);
+    else if (tr.cls === 'smeared')
+      out.push([S.mode === 'free' ? '' : 'warn', 'The move from ' + f + ' to ' + t2 + ' took ' + fmt(tr.glideMs,0) + ' ms of glide.' + (S.mode === 'free' ? ' In free play that reads as meend.' : ' In a drill you want the new swara to arrive already in tune, not be arrived at.')]);
+    else if (tr.cls === 'meend')
+      out.push(['', 'A ' + fmt(tr.glideMs,0) + ' ms glide from ' + f + ' into ' + t2 + ' — clean meend.']);
+    else if (tr.cls === 'crisp')
+      out.push(['good', f + ' to ' + t2 + ' in ' + fmt(tr.glideMs,0) + ' ms, no dip and no blip. Clean change.']);
+    if (Math.abs(tr.intervalErr) > 28)
+      out.push(['warn', 'The interval itself came out ' + fmt(Math.abs(tr.intervalErr),0) + ' cents ' + (tr.intervalErr > 0 ? 'wide' : 'narrow') + '.']);
+  }
+
+  if (!out.length) out.push(['good', 'Clean open, steady middle, honest ending. Nothing to fix on that one.']);
+  // keep it to what a player can act on
+  var rank = { bad:0, warn:1, '':2, good:3 };
+  out.sort(function (x, y) { return rank[x[0]] - rank[y[0]]; });
+  return out.slice(0, 3);
+}
+
+/* ======================================================== RENDERING ===== */
+var MAX_CAND = 24, candIdx = new Float32Array(MAX_CAND);
+var prevWin = new Float32Array(0), agcEnv = 0.1;
+var PXb = new Float32Array(2200), PYb = new Float32Array(2200);
+
+function frameRms(buf, n) { var s = 0; for (var i = 0; i < n; i++) { var v = buf[i]; s += v * v; } return Math.sqrt(s / n); }
+
+/** Hysteresis-armed rising zero crossing, sub-sample interpolated, with the
+ *  candidate disambiguated by correlation against the previous frame. The
+ *  correlation step is what actually stops the trace sliding: a flute with a
+ *  strong 2nd harmonic offers two armed crossings per period and picking the
+ *  first one flips between them, jumping the trace half a period. */
+function findTrigger(buf, searchLen, corrLen, rms) {
+  var n = buf.length;
+  if (rms < GATE_RMS) return -1;
+  var hyst = 0.20 * rms;                 // relative, never absolute: a quiet
+                                         // player would never arm a fixed one
+  var lim = Math.min(searchLen, n - corrLen - 1), armed = false, nc = 0, i;
+  for (i = 1; i < lim && nc < MAX_CAND; i++) {
+    var s = buf[i];
+    if (!armed) { if (s < -hyst) armed = true; continue; }
+    if (s >= 0 && buf[i - 1] < 0) {
+      var a = buf[i - 1];
+      candIdx[nc++] = (i - 1) + (s === a ? 0 : (-a) / (s - a));
+      armed = false;
+    }
+  }
+  if (nc === 0) return -1;
+  var t = candIdx[0];
+  if (prevWin.length === corrLen) {
+    var best = -Infinity;
+    for (var j = 0; j < nc; j++) {
+      var i0 = candIdx[j] | 0;
+      if (i0 + corrLen >= n) continue;
+      var dot = 0, en = 0;
+      for (var k = 0; k < corrLen; k++) { var v = buf[i0 + k]; dot += v * prevWin[k]; en += v * v; }
+      var sc = dot / Math.sqrt(en + 1e-12);
+      if (sc > best) { best = sc; t = candIdx[j]; }
+    }
+  }
+  if (prevWin.length !== corrLen) prevWin = new Float32Array(corrLen);
+  var b0 = t | 0;
+  for (var q = 0; q < corrLen; q++) prevWin[q] = (b0 + q < n) ? buf[b0 + q] : 0;
+  return t;
+}
+
+function drawScope(buf, sr, freq, locked, dt) {
+  var ctx = scope.ctx, V = scope.view, W = V.w, Hh = V.h;
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, Hh);
+  var mid = Hh * 0.5, amp = Hh * 0.5 * 0.86;
+  ctx.strokeStyle = C.grid; hairline(ctx, mid, 0, W, V.dpr);
+
+  var rms = frameRms(buf, 2048);
+  live.peak = 0;
+  for (var q = buf.length - 2048; q < buf.length; q++) { var av = Math.abs(buf[q]); if (av > live.peak) live.peak = av; }
+  if (live.peak > 0.985) live.clip = Math.min(30, live.clip + 3); else live.clip = Math.max(0, live.clip - 1);
+
+  var cycles = W >= 560 ? S.cycles : Math.max(1, Math.min(2, S.cycles));
+  var winLen = locked ? Math.round(cycles * sr / freq) : Math.round(0.024 * sr);
+  winLen = Math.max(96, Math.min(winLen, Math.min(1800, Math.floor(FFT_SIZE * 0.45))));
+  var searchLen = Math.ceil(2.2 * sr / (locked ? freq : 150)) + 4;
+  var corrLen = Math.max(32, Math.min(256, Math.round(locked ? sr / freq : 200)));
+  var tg = findTrigger(buf, searchLen, corrLen, rms);
+  if (tg < 0) tg = 0;
+
+  // AGC: fast attack so a sudden note does not clip off-screen, slow release
+  // so the gain does not pump up through every decay.
+  if (rms >= GATE_RMS) {
+    var p = 0;
+    for (var z = tg | 0; z < (tg | 0) + winLen && z < buf.length; z++) { var azv = Math.abs(buf[z]); if (azv > p) p = azv; }
+    var aA = 1 - Math.exp(-dt / 0.040), aR = 1 - Math.exp(-dt / 0.700);
+    agcEnv += (p - agcEnv) * (p > agcEnv ? aA : aR);
+  }
+  var gain = Math.min(24, Math.max(1, 0.92 / Math.max(agcEnv, 0.02)));
+
+  var i0 = tg | 0, N, k;
+  if (winLen <= 1.5 * W) {
+    N = Math.min(winLen, PXb.length - 1);
+    var xs = W / N;
+    for (k = 0; k <= N; k++) {
+      var v = buf[i0 + k] * gain;
+      if (v > 1) v = 1; else if (v < -1) v = -1;
+      PXb[k] = k * xs; PYb[k] = mid - v * amp;
+    }
+  } else {
+    N = Math.min(Math.floor(W), PXb.length - 1);
+    for (k = 0; k <= N; k++) {
+      var aI = i0 + Math.floor(k * winLen / N), bI = i0 + Math.floor((k + 1) * winLen / N), sm = 0, ct = 0;
+      for (var jj = aI; jj < Math.max(bI, aI + 1); jj++) { sm += buf[jj] || 0; ct++; }
+      var vv = (sm / ct) * gain;
+      if (vv > 1) vv = 1; else if (vv < -1) vv = -1;
+      PXb[k] = (k / N) * W; PYb[k] = mid - vv * amp;
+    }
+  }
+
+  // Catmull-Rom as cubic Bezier: cp1 = P1+(P2-P0)/6, cp2 = P2-(P3-P1)/6
+  ctx.beginPath(); ctx.moveTo(PXb[0], PYb[0]);
+  for (k = 0; k < N; k++) {
+    var m1 = k > 0 ? k - 1 : 0, p2 = k + 2 <= N ? k + 2 : N;
+    ctx.bezierCurveTo(
+      PXb[k] + (PXb[k + 1] - PXb[m1]) / 6, PYb[k] + (PYb[k + 1] - PYb[m1]) / 6,
+      PXb[k + 1] - (PXb[p2] - PXb[k]) / 6, PYb[k + 1] - (PYb[p2] - PYb[k]) / 6,
+      PXb[k + 1], PYb[k + 1]);
+  }
+  ctx.strokeStyle = C.wave;
+  ctx.globalAlpha = 0.16; ctx.lineWidth = 7;   ctx.stroke();   // glow, no shadowBlur
+  ctx.globalAlpha = 1;    ctx.lineWidth = 2.2; ctx.stroke();
+  ctx.globalAlpha = 1;
+  return gain;
+}
+
+function ribbonRange() {
+  var lo = 1e9, hi = -1e9, kk, cnt = 0;
+  var from = Math.max(0, H.n - Math.min(CAP, 900));
+  for (kk = from; kk < H.n; kk++) { var ii = hIdx(kk); if (!H.v[ii]) continue; cnt++; if (H.cm[ii] < lo) lo = H.cm[ii]; if (H.cm[ii] > hi) hi = H.cm[ii]; }
+  if (!cnt) { lo = -200; hi = 1400; }
+  var mid = (lo + hi) / 2, span = Math.max(1000, (hi - lo) * 1.5);
+  span = Math.min(span, 3200);
+  return { lo: mid - span / 2, hi: mid + span / 2 };
+}
+var ribR = { lo:-200, hi:1400 };
+
+function drawRibbon(now) {
+  var ctx = ribbon.ctx, V = ribbon.view, W = V.w, Hh = V.h;
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, Hh);
+  var span = 14, t1 = now, t0 = now - span;
+  var tgt = ribbonRange();
+  ribR.lo += (tgt.lo - ribR.lo) * 0.04; ribR.hi += (tgt.hi - ribR.hi) * 0.04;
+  var padL = 34;
+  function X(t) { return padL + (t - t0) / span * (W - padL - 6); }
+  function Y(c) { return Hh - 6 - (c - ribR.lo) / (ribR.hi - ribR.lo) * (Hh - 12); }
+
+  // swara gridlines
+  var o0 = Math.floor(ribR.lo / 1200) - 1, o1 = Math.ceil(ribR.hi / 1200) + 1;
+  ctx.font = '10px "IBM Plex Mono", monospace'; ctx.textBaseline = 'middle';
+  for (var o = o0; o <= o1; o++) {
+    for (var s = 0; s < 12; s++) {
+      var c = idealCents(s, o, S.tblRef);
+      if (c < ribR.lo || c > ribR.hi) continue;
+      var y = Y(c), isSa = s === 0, isP = s === 7;
+      ctx.strokeStyle = isSa ? C.gridS : C.grid;
+      ctx.globalAlpha = isSa ? 1 : (isP ? 0.8 : 0.45);
+      hairline(ctx, y, padL, W - 6, V.dpr);
+      ctx.globalAlpha = 1;
+      if (isSa || isP || (ribR.hi - ribR.lo) < 1700) {
+        ctx.fillStyle = isSa ? C.text : C.faint;
+        ctx.fillText(SWARAS[s].s + (o < 0 ? '.' : (o > 0 ? '˙' : '')), 5, y);
+      }
+    }
+  }
+
+  // three buckets so the whole ribbon is three stroke calls, not five hundred
+  var pIn = new Path2D(), pNear = new Path2D(), pOff = new Path2D();
+  var prevOk = false, prevBucket = -1, from = Math.max(0, H.n - CAP);
+  for (var k = from; k < H.n; k++) {
+    var i = hIdx(k);
+    if (H.t[i] < t0) { prevOk = false; continue; }
+    if (!H.v[i]) { prevOk = false; continue; }
+    var ad = Math.abs(H.c[i]);          // already computed at capture time
+    var b = ad <= S.tol ? 0 : (ad <= S.tol * 2.2 ? 1 : 2);
+    var p = b === 0 ? pIn : (b === 1 ? pNear : pOff);
+    var x = X(H.t[i]), y = Y(H.cm[i]);
+    if (!prevOk || b !== prevBucket) p.moveTo(x, y); else p.lineTo(x, y);
+    prevOk = true; prevBucket = b;
+  }
+  ctx.lineWidth = 2.4;
+  ctx.strokeStyle = C.good; ctx.stroke(pIn);
+  ctx.strokeStyle = C.warn; ctx.stroke(pNear);
+  ctx.strokeStyle = C.bad;  ctx.stroke(pOff);
+
+  // transition markers
+  ctx.font = '9px "IBM Plex Sans", sans-serif'; ctx.textAlign = 'center';
+  for (var ti = Math.max(0, transitions.length - 40); ti < transitions.length; ti++) {
+    var tr = transitions[ti];
+    if (tr.to.t0 < t0) continue;
+    var tx = X(tr.to.t0);
+    var col = tr.cls === 'crisp' ? C.good : (tr.ornament ? C.accent : C.bad);
+    ctx.fillStyle = col; ctx.globalAlpha = 0.9;
+    ctx.fillRect(tx - 1, 4, 2, 9);
+    ctx.globalAlpha = 1;
+  }
+  ctx.textAlign = 'left';
+}
+
+function drawEnvelope(now) {
+  var ctx = envv.ctx, V = envv.view, W = V.w, Hh = V.h;
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, Hh);
+  var note = cur || (notes.length ? notes[notes.length - 1] : null);
+  if (!note) { ctx.fillStyle = C.faint; ctx.font = '12px "IBM Plex Sans",sans-serif'; ctx.fillText('The shape of your breath through each note appears here.', 14, Hh / 2); return; }
+  var t0 = note.t0, t1 = note.t1 || now;
+  var win = Math.max(0.8, t1 - t0);
+  if (win > 8) { t0 = t1 - 8; win = 8; }            // chart the last 8 s at most
+  var R = envRange(t0 - 0.12, t0 + win + 0.12, 700);
+  if (R.t.length < 3) return;
+  var lo = 999, hi = -999, i;
+  for (i = 0; i < R.db.length; i++) { if (R.db[i] < lo) lo = R.db[i]; if (R.db[i] > hi) hi = R.db[i]; }
+  lo = Math.max(lo, hi - 46); hi = hi + 2;
+  var padL = 36, padB = 16;
+  function X(t) { return padL + (t - (t0 - 0.12)) / (win + 0.24) * (W - padL - 8); }
+  function Y(d) { return 8 + (hi - d) / (hi - lo) * (Hh - 8 - padB); }
+
+  var a = note.a;
+  if (a) {
+    ctx.fillStyle = C.surface2; ctx.globalAlpha = 0.85;
+    ctx.fillRect(padL, Y(a.sustainDb + 1), W - padL - 8, Math.max(2, Y(a.sustainDb - 1) - Y(a.sustainDb + 1)));
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = C.gridS; hairline(ctx, Y(a.sustainDb), padL, W - 8, V.dpr);
+  }
+  ctx.strokeStyle = C.grid;
+  for (var d = Math.ceil(lo / 10) * 10; d < hi; d += 10) { hairline(ctx, Y(d), padL, W - 8, V.dpr);
+    ctx.fillStyle = C.faint; ctx.font = '9px "IBM Plex Mono",monospace'; ctx.textBaseline = 'middle'; ctx.fillText(d + '', 4, Y(d)); }
+
+  ctx.beginPath();
+  for (i = 0; i < R.t.length; i++) { var x = X(R.t[i]), y = Y(R.db[i]); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
+  ctx.strokeStyle = C.accent; ctx.lineWidth = 1.8; ctx.globalAlpha = 0.95; ctx.stroke(); ctx.globalAlpha = 1;
+
+  if (a && isFinite(a.dbSlope) && (t1 - t0) > 0.5) {
+    var ts0 = t0 + ATTACK_IGNORE, ts1 = t1;
+    var midT = (ts0 + ts1) / 2, midD = a.sustainDb;
+    ctx.beginPath();
+    ctx.moveTo(X(ts0), Y(midD + a.dbSlope * (ts0 - midT)));
+    ctx.lineTo(X(ts1), Y(midD + a.dbSlope * (ts1 - midT)));
+    ctx.setLineDash([4, 4]); ctx.lineWidth = 1.4;
+    ctx.strokeStyle = a.dbSlope < -3 ? C.bad : (a.dbSlope < -1.2 ? C.warn : C.good);
+    ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.fillStyle = C.faint; ctx.font = '9.5px "IBM Plex Sans",sans-serif'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText('attack', X(t0) + 3, Hh - 4);
+  ctx.strokeStyle = C.gridS; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(X(t0), 8); ctx.lineTo(X(t0), Hh - padB); ctx.stroke();
+}
+
+/* =========================================================== DRILLS ===== */
+function sq(idx, oct) { return { idx:idx, oct:oct || 0 }; }
+var BILAWAL = [0, 2, 4, 5, 7, 9, 11];
+function buildSeq(mode) {
+  var out = [], i;
+  if (mode === 'scale') {
+    for (i = 0; i < 7; i++) out.push(sq(BILAWAL[i], 0));
+    out.push(sq(0, 1));
+    for (i = 6; i >= 0; i--) out.push(sq(BILAWAL[i], 0));
+    out.push(sq(0, 0));
+  } else if (mode === 'alankar') {
+    // S R G · R G m · G m P · m P D · P D N · D N S'
+    for (i = 0; i <= 5; i++) {
+      out.push(sq(BILAWAL[i], 0));
+      out.push(sq(BILAWAL[i + 1], 0));
+      out.push(i + 2 <= 6 ? sq(BILAWAL[i + 2], 0) : sq(0, 1));
+    }
+  }
+  return out;
+}
+function seqLabel(s) {
+  var sw = SWARAS[s.idx];
+  return { t:sw.s, komal:sw.kind === 'komal', oct:s.oct };
+}
+function renderDrill() {
+  var d = el.drillDetail;
+  if (S.mode === 'free') { d.hidden = true; d.innerHTML = ''; return; }
+  d.hidden = false;
+  if (S.mode === 'hold') {
+    var opts = '';
+    for (var i = 0; i < 12; i++) opts += '<option value="' + i + '"' + (i === S.holdTarget ? ' selected' : '') + '>' + SWARAS[i].name + '</option>';
+    var pct = Math.min(1, drill.holdMs / (S.holdGoal * 1000));
+    d.innerHTML =
+      '<svg class="holdRing" viewBox="0 0 44 44" aria-hidden="true">' +
+        '<circle cx="22" cy="22" r="19" fill="none" stroke="' + C.surface2 + '" stroke-width="4"/>' +
+        '<circle cx="22" cy="22" r="19" fill="none" stroke="' + (pct >= 1 ? C.good : C.accent) + '" stroke-width="4" stroke-linecap="round"' +
+        ' stroke-dasharray="' + (2 * Math.PI * 19).toFixed(1) + '" stroke-dashoffset="' + ((1 - pct) * 2 * Math.PI * 19).toFixed(1) + '" transform="rotate(-90 22 22)"/>' +
+      '</svg>' +
+      '<div><div style="font-size:12px;color:var(--muted)">Hold <b style="color:var(--text)">' + SWARAS[S.holdTarget].name + '</b> in tune and steady</div>' +
+      '<div class="mono" style="font-size:18px;font-weight:500">' + (drill.holdMs / 1000).toFixed(1) + 's <span style="font-size:11px;color:var(--faint)">of ' + S.holdGoal + 's · best ' + (drill.best / 1000).toFixed(1) + 's</span></div></div>' +
+      '<label style="margin-left:auto;font-size:12px;color:var(--muted);display:flex;gap:7px;align-items:center">Target <select id="holdSel">' + opts + '</select></label>' +
+      '<label style="font-size:12px;color:var(--muted);display:flex;gap:7px;align-items:center">Goal <select id="goalSel">' +
+        [3,5,8,12,20].map(function (g) { return '<option value="' + g + '"' + (g === S.holdGoal ? ' selected' : '') + '>' + g + 's</option>'; }).join('') + '</select></label>';
+    var hs = $('holdSel'); if (hs) hs.onchange = function () { S.holdTarget = +this.value; drill.holdMs = 0; save(); renderDrill(); };
+    var gs = $('goalSel'); if (gs) gs.onchange = function () { S.holdGoal = +this.value; save(); renderDrill(); };
+    return;
+  }
+  var html = '<div class="seq">';
+  for (var j = 0; j < drill.seq.length; j++) {
+    var L = seqLabel(drill.seq[j]);
+    var cls = drill.marks[j] === 1 ? 'hit' : (drill.marks[j] === 2 ? 'miss' : (j === drill.pos ? 'now' : ''));
+    html += '<span class="' + cls + '" title="' + SWARAS[drill.seq[j].idx].name + '">' +
+            (L.komal ? '<em class="k" style="font-style:normal">' + L.t + '</em>' : L.t) +
+            (L.oct > 0 ? '̇' : '') + '</span>';
+  }
+  html += '</div><div style="margin-left:auto;font-size:12px;color:var(--muted)" id="runMeta"></div>';
+  d.innerHTML = html;
+  var rm = $('runMeta');
+  if (rm && drill.runs.length) {
+    var last = drill.runs[drill.runs.length - 1];
+    rm.innerHTML = 'Last run <b style="color:var(--text)">' + last.score + '</b> · ' + last.hit + '/' + last.total + ' clean';
+  } else if (rm) rm.textContent = 'Play the sequence in order';
+}
+
+function onNoteDone(note, tr) {
+  addCard(note, tr);
+  if (S.mode !== 'scale' && S.mode !== 'alankar') return;
+  var want = drill.seq[drill.pos];
+  if (!want) return;
+  var got = note.idx, gotOct = note.oct;
+  if (got === want.idx && gotOct === want.oct) { drill.marks[drill.pos] = 1; drill.pos++; }
+  else {
+    var nxt = drill.seq[drill.pos + 1];
+    if (nxt && got === nxt.idx && gotOct === nxt.oct) { drill.marks[drill.pos] = 2; drill.marks[drill.pos + 1] = 1; drill.pos += 2; }
+    else { drill.marks[drill.pos] = 2; drill.pos++; }
+  }
+  if (drill.pos >= drill.seq.length) {
+    var hit = drill.marks.filter(function (m) { return m === 1; }).length;
+    var recent = notes.slice(-drill.seq.length);
+    var avg = recent.length ? Math.round(recent.reduce(function (s, n) { return s + (n.a ? n.a.score : 0); }, 0) / recent.length) : 0;
+    drill.runs.push({ score:Math.round(avg * 0.6 + (hit / drill.seq.length) * 100 * 0.4), hit:hit, total:drill.seq.length });
+    drill.pos = 0; drill.marks = [];
+  }
+  renderDrill();
+}
+
+/* ============================================================== UI ====== */
+function addCard(note, tr) {
+  var a = note.a; if (!a) return;
+  if (el.coach.firstElementChild && el.coach.firstElementChild.className === 'empty') el.coach.innerHTML = '';
+  var lines = coachLines(note, tr);
+  var sw = SWARAS[note.idx];
+  var div = document.createElement('div');
+  div.className = 'noteCard';
+  var col = a.score >= 85 ? 'var(--good)' : (a.score >= 65 ? 'var(--warn)' : 'var(--bad)');
+  var oc = note.oct < 0 ? 'mandra' : (note.oct > 0 ? 'taar' : 'madhya');
+  div.innerHTML =
+    '<div class="ncSw">' + (sw.kind === 'komal' ? '<span style="text-decoration:underline;text-underline-offset:4px">' + sw.s + '</span>' : sw.s) +
+      '<span class="o">' + oc + '</span></div>' +
+    '<div class="ncMsg">' + lines.map(function (l) {
+        var c = l[0] === 'good' ? 'var(--good)' : (l[0] === 'bad' ? 'var(--bad)' : (l[0] === 'warn' ? 'var(--warn)' : 'var(--faint)'));
+        return '<span class="line"><span style="color:' + c + '">●</span> ' + esc(l[1]) + '</span>';
+      }).join('') +
+      '<span class="line" style="color:var(--faint);font-size:11.5px;margin-top:5px">' +
+        fmt(a.dur, 1) + 's · ' + (a.meanDev >= 0 ? '+' : '') + fmt(a.meanDev, 0) + '¢ · ±' + fmt(a.wobble, 1) + '¢ · ' +
+        (a.dbSlope >= 0 ? '+' : '') + fmt(a.dbSlope, 1) + ' dB/s' + (isFinite(a.attackMs) && !note.fromGlide ? ' · attack ' + (a.attackMs < 10 ? '<10' : fmt(a.attackMs, 0)) + 'ms' : '') +
+      '</span></div>' +
+    '<div class="ncScore" style="color:' + col + '">' + a.score + '<small>score</small></div>';
+  el.coach.insertBefore(div, el.coach.firstChild);
+  while (el.coach.children.length > 40) el.coach.removeChild(el.coach.lastChild);
+  var ok = notes.filter(function (n) { return n.a && n.a.score >= 80; }).length;
+  el.sessionMeta.textContent = notes.length + ' notes · ' + ok + ' clean';
+}
+function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function setBars(node, frac, tone) {
+  var n = 5, filled = Math.round(clamp(frac, 0, 1) * n);
+  if (node.childElementCount !== n) { node.innerHTML = ''; for (var i = 0; i < n; i++) node.appendChild(document.createElement('i')); }
+  for (var j = 0; j < n; j++) node.children[j].className = j < filled ? ('f ' + (tone || '')) : '';
+}
+
+var uiTick = 0;
+function updateUI(now) {
+  if (uiTick++ % 4) return;
+  var v = live.voiced;
+  el.swaraCard.classList.toggle('idle', !v);
+  if (v && live.dispIdx >= 0) {
+    var sw = SWARAS[live.dispIdx];
+    el.devBig.textContent = sw.dev;
+    el.bigName.innerHTML = sw.kind === 'komal' ? '<span class="kom">' + sw.name.replace('komal ', '') + '</span>' : sw.name;
+    el.octName.textContent = (OCT_NAME[live.dispOct] || '') + ' saptak';
+    el.hzVal.textContent = fmt(live.f, 1);
+    var cdev = live.dispCents;
+    el.needle.classList.remove('off');
+    el.needle.style.left = (50 + clamp(cdev / 50, -1, 1) * 50) + '%';
+    var inTune = Math.abs(cdev) <= S.tol;
+    el.needle.style.background = inTune ? 'var(--good)' : (Math.abs(cdev) <= S.tol * 2.2 ? 'var(--warn)' : 'var(--bad)');
+    el.centsBig.textContent = (cdev >= 0 ? '+' : '−') + fmt(Math.abs(cdev), 0) + ' cents ' + (inTune ? '· in tune' : (cdev > 0 ? '· sharp' : '· flat'));
+    el.centsBig.style.color = inTune ? 'var(--good)' : 'var(--text)';
+  } else {
+    el.devBig.textContent = '—'; el.bigName.textContent = 'Silence';
+    el.octName.textContent = 'play something'; el.hzVal.textContent = '—';
+    el.needle.classList.add('off'); el.centsBig.textContent = '—'; el.centsBig.style.color = '';
+  }
+
+  // live "this note" panel
+  var n0 = cur, ref = null, age = 0;
+  if (n0) {
+    age = now - n0.t0;
+    // Bound the live window: a long note would otherwise grow this without limit,
+    // and recent steadiness is what the player can act on anyway.
+    var k0 = Math.max(n0.k0, H.n - 380), t0l = k0 > n0.k0 ? H.t[hIdx(k0)] : n0.t0;
+    ref = age > 0.35 ? analyseNote({ k0:k0, k1:H.n, t0:t0l, idx:n0.idx, oct:n0.oct }) : null;
+  }
+  else if (notes.length) ref = notes[notes.length - 1].a;
+  el.noteAge.textContent = n0 ? fmt(age, 1) + 's' : (notes.length ? 'last note' : '—');
+
+  if (ref) {
+    var wob = ref.wobble;
+    el.stSteady.textContent = wob <= 5 ? 'Excellent' : (wob <= 10 ? 'Good' : (wob <= 20 ? 'Unsteady' : 'Wandering'));
+    el.stSteadySub.textContent = '±' + fmt(wob, 1) + ' cents' + (ref.vibShare > 0.5 && ref.vibDepth > 8 ? ' · vibrato ' + fmt(ref.vibRate, 1) + 'Hz' : '');
+    setBars(el.barSteady, 1 - clamp(wob / 25, 0, 1), wob <= 10 ? 'good' : (wob > 20 ? 'bad' : ''));
+    var tot = ref.slopeOk ? ref.dbSlope * Math.max(ref.dur, 0.001) : 0;
+    el.stBreath.textContent = !ref.slopeOk ? (ref.dbSd > 2.5 ? 'Pulsing' : 'Too short to judge')
+      : (ref.dbSd <= 1 && Math.abs(tot) <= 3 ? 'Even' : (tot <= -8 ? 'Running out' : (tot <= -3 ? 'Fading' : (ref.dbSd > 2.5 ? 'Pulsing' : 'Steady'))));
+    el.stBreathSub.textContent = (ref.slopeOk ? (tot >= 0 ? '+' : '−') + fmt(Math.abs(tot), 1) + ' dB over the note · ' : 'hold it longer · ') + '±' + fmt(ref.dbSd, 1) + ' dB';
+    setBars(el.barBreath, 1 - clamp((Math.max(0, -tot) / 10 + ref.dbSd / 5) / 2, 0, 1), (tot > -3 && ref.dbSd <= 1.5) ? 'good' : (tot <= -8 ? 'bad' : ''));
+    el.stTone.textContent = ref.clarity > 0.95 ? 'Focused' : (ref.clarity > 0.8 ? 'Clear' : (ref.clarity > 0.55 ? 'Developing' : 'Airy'));
+    el.stToneSub.textContent = 'purity ' + fmt(ref.clarity * 100, 0) + '%';
+    setBars(el.barTone, clamp((ref.clarity - 0.3) / 0.68, 0, 1), ref.clarity > 0.85 ? 'good' : (ref.clarity < 0.55 ? 'bad' : ''));
+  }
+  var lvl = live.db;
+  el.stLevel.textContent = live.clip > 4 ? 'Too loud' : (lvl < -46 ? 'Too quiet' : 'Good');
+  el.stLevelSub.textContent = fmt(lvl, 0) + ' dBFS' + (live.clip > 4 ? ' · clipping, move back' : (lvl < -46 ? ' · move closer' : ''));
+  setBars(el.barLevel, clamp((lvl + 60) / 52, 0, 1), live.clip > 4 ? 'bad' : (lvl > -46 && lvl < -6 ? 'good' : ''));
+
+  var locked = v && live.cl > 0.8;
+  el.lockPill.classList.toggle('on', locked);
+  el.lockPill.lastElementChild.textContent = locked ? 'locked' : (v ? 'searching' : 'waiting');
+  el.scopeMeta.textContent = v ? fmt(live.f, 1) + ' Hz · ' + (W_cycles) + ' cycles' : 'no tone';
+  el.ribbonMeta.textContent = 'last 14 s · gridlines are swaras';
+  el.envMeta.textContent = cur ? 'this note, live' : (notes.length ? 'last note' : '—');
+  if (S.mode === 'hold') renderDrill();
+}
+var W_cycles = 3;
+
+/* ============================================================ LOOP ====== */
+var lastT = 0, holdBreak = 0;
+function loop(now) {
+  if (!S.running) { A.raf = 0; return; }
+  A.raf = requestAnimationFrame(loop);
+  var tSec = now / 1000;
+  // Clamp: 120 Hz ProMotion halves it, a background tab stretches it to seconds.
+  var dt = lastT ? Math.max(0.004, Math.min(0.050, tSec - lastT)) : 1 / 60;
+  lastT = tSec;
+
+  var sr = A.ctx.sampleRate;           // read fresh: iOS can change it on capture
+  A.scopeAn.getFloatTimeDomainData(scopeBuf);
+  A.detAn.getFloatTimeDomainData(detBuf);
+  var aNow = A.ctx.currentTime;
+  eCollect(scopeBuf, aNow, sr);
+
+  var r = A.det.detect(detBuf, FFT_SIZE - A.det.windowSize, sr, S.fMin, S.fMax, CLARITY_OFF);
+  var srms = frameRms(scopeBuf, 2048);
+  var db = toDb(srms);
+  var gateRms = S.droneOn ? GATE_RMS * 2.2 : GATE_RMS;
+  var voiced = r.frequency > 0 && srms > gateRms && r.clarity > (live.voiced ? CLARITY_OFF : CLARITY_ON);
+
+  var cm = 0, devC = 0;
+  if (voiced) {
+    cm = medianPush(centsFromSa(r.frequency, S.saHz));
+    var nr = nearest(cm, S.tblRef);
+    if (nr) {
+      devC = nr.cents;
+      if (nr.idx !== live.dispIdx || nr.octave !== live.dispOct) {
+        live.labelRun++;
+        if (live.labelRun >= 3) { live.dispIdx = nr.idx; live.dispOct = nr.octave; live.labelRun = 0; }
+      } else live.labelRun = 0;
+    }
+  } else { medBuf.length = 0; live.labelRun = 0; }
+
+  live.f = voiced ? r.frequency : -1;
+  live.cl = r.clarity; live.db = db; live.voiced = voiced;
+  var aD = 1 - Math.exp(-dt / 0.060);
+  live.dispCents += ((voiced ? devC : 0) - live.dispCents) * aD;
+
+  push(aNow, devC, cm, db, r.clarity, voiced ? 1 : 0);
+  stepSegmenter(H.n - 1, aNow, voiced, cm);
+
+  // hold-a-swara drill
+  if (S.mode === 'hold') {
+    var onTarget = voiced && live.dispIdx === S.holdTarget && Math.abs(devC) <= S.tol;
+    if (onTarget) { drill.holdMs += dt * 1000; holdBreak = 0; if (drill.holdMs > drill.best) drill.best = drill.holdMs; }
+    else { holdBreak += dt * 1000; if (holdBreak > 220) { drill.holdMs = 0; } }
+  }
+
+  W_cycles = scope.view.w >= 560 ? S.cycles : Math.max(1, Math.min(2, S.cycles));
+  drawScope(scopeBuf, sr, voiced ? r.frequency : 0, voiced && r.clarity > 0.6, dt);
+  drawRibbon(aNow);
+  drawEnvelope(aNow);
+  updateUI(aNow);
+}
+
+/* ======================================================== SETTINGS ====== */
+function save() {
+  try {
+    localStorage.setItem('naad', JSON.stringify({
+      fluteIdx:S.fluteIdx, saHz:S.saHz, a4:S.a4, tuning:S.tuning, tol:S.tol,
+      winSize:S.winSize, cycles:S.cycles, theme:S.theme, droneVol:S.droneVol,
+      holdTarget:S.holdTarget, holdGoal:S.holdGoal, mode:S.mode
+    }));
+  } catch (e) {}
+}
+function load() {
+  try {
+    var o = JSON.parse(localStorage.getItem('naad') || '{}');
+    for (var k in o) if (o[k] != null) S[k] = o[k];
+  } catch (e) {}
+}
+
+function tolLabel(t) { return t >= 18 ? 'beginner' : (t >= 8 ? 'intermediate' : 'advanced'); }
+
+function applySettings(recalcSa) {
+  var f = FLUTES[S.fluteIdx];
+  if (recalcSa) S.saHz = fluteHz(f, S.a4);
+  S.tblRef = targets(S.tuning);
+  // Follow the chosen Sa rather than a fixed window. A fixed 150-2600 Hz range
+  // clipped the top of an F natural medium, whose taar Ni is 2637 Hz, and gave
+  // a bass flute 2 kHz of headroom it can never reach.
+  S.fMin = Math.max(110, S.saHz * 0.55);   // comfortably under mandra Pa
+  S.fMax = Math.min(3800, S.saHz * 5.1);   // comfortably over taar Ni
+  A.det = createDetector(S.winSize);
+
+  el.saHz.value = fmt(S.saHz, 2);
+  el.a4.value = S.a4;
+  el.tol.value = S.tol;
+  el.cyc.value = S.cycles;
+  el.droneVol.value = Math.round(S.droneVol * 100);
+  el.tolHint.textContent = '±' + S.tol + ' cents — ' + tolLabel(S.tol);
+  el.cycHint.textContent = S.cycles + ' cycle' + (S.cycles > 1 ? 's' : '') + ' across the screen';
+  el.tunET.setAttribute('aria-pressed', S.tuning === 'et');
+  el.tunJI.setAttribute('aria-pressed', S.tuning === 'ji');
+  el.saSelect.value = String(S.fluteIdx);
+
+  var midi = midiOf(f), pipe = midi - 5;
+  var exact = Math.abs(S.saHz - fluteHz(f, S.a4)) < 0.02;
+  el.saHzHint.textContent = exact
+    ? 'Sa = ' + noteName(midi) + '. All six holes closed sounds ' + noteName(pipe) + ' — that is mandra Pa, not Sa.'
+    : 'Custom — ' + fmt(S.saHz, 2) + ' Hz, tuned to what you played.';
+  el.tagline.textContent = f.label.replace(' natural', '').replace(' medium', ' med') + ' \u00b7 Sa ' + noteName(midiOf(f));
+
+  document.querySelectorAll('[data-win]').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.win === S.winSize); });
+  document.querySelectorAll('[data-theme-set]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.themeSet === S.theme); });
+  document.querySelectorAll('[data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mode === S.mode); });
+
+  if (S.theme === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', S.theme);
+  readTheme();
+
+  drill.seq = buildSeq(S.mode); drill.marks = []; drill.pos = 0;
+  renderDrill();
+  save();
+}
+
+function calibrate() {
+  if (!S.running) { el.calibBtn.textContent = 'Press Start first'; setTimeout(function () { el.calibBtn.textContent = 'Tune to my Sa'; }, 1600); return; }
+  el.calibBtn.textContent = 'Listening…';
+  var samples = [], t0 = performance.now();
+  (function tick() {
+    if (live.voiced && live.f > 0) samples.push(live.f);
+    if (performance.now() - t0 < 1400) { setTimeout(tick, 30); return; }
+    if (samples.length < 12) {
+      el.calibBtn.textContent = 'Heard nothing — try again';
+      setTimeout(function () { el.calibBtn.textContent = 'Tune to my Sa'; }, 1900);
+      return;
+    }
+    samples.sort(function (a, b) { return a - b; });
+    var f = samples[samples.length >> 1];
+    var midi = Math.round(69 + 12 * Math.log2(f / S.a4));
+    var snapped = S.a4 * Math.pow(2, (midi - 69) / 12);
+    var off = 1200 * Math.log2(f / snapped);
+    S.saHz = snapped;
+    var match = -1;
+    for (var i = 0; i < FLUTES.length; i++) if (midiOf(FLUTES[i]) === midi) { match = i; break; }
+    if (match >= 0) S.fluteIdx = match;
+    applySettings(false);
+    el.calibBtn.textContent = 'Sa set to ' + noteName(midi) + ' (' + (off >= 0 ? '+' : '') + fmt(off, 0) + '¢)';
+    setTimeout(function () { el.calibBtn.textContent = 'Tune to my Sa'; }, 3200);
+  })();
+}
+
+/* ============================================================ WAKE ====== */
+function toggleWake() {
+  if (!('wakeLock' in navigator)) { el.wakeBtn.textContent = 'Not supported'; return; }
+  if (S.wake) { S.wake.release().catch(function () {}); S.wake = null; el.wakeBtn.textContent = 'Off'; el.wakeBtn.setAttribute('aria-pressed', 'false'); return; }
+  navigator.wakeLock.request('screen').then(function (w) {
+    S.wake = w; el.wakeBtn.textContent = 'On'; el.wakeBtn.setAttribute('aria-pressed', 'true');
+    w.addEventListener('release', function () { S.wake = null; el.wakeBtn.textContent = 'Off'; el.wakeBtn.setAttribute('aria-pressed', 'false'); });
+  }).catch(function () { el.wakeBtn.textContent = 'Blocked'; });
+}
+
+/* ============================================================ INIT ====== */
+function init() {
+  load();
+  if (!S.holdGoal) S.holdGoal = 8;
+  if (!S.tol) S.tol = 15;
+  readTheme();
+  scope = mkCanvas(el.scope); ribbon = mkCanvas(el.ribbon); envv = mkCanvas(el.envelope);
+
+  var opts = '';
+  for (var i = 0; i < FLUTES.length; i++) {
+    var f = FLUTES[i];
+    opts += '<option value="' + i + '">' + f.label + ' — Sa ' + noteName(midiOf(f)) + '</option>';
+  }
+  el.saSelect.innerHTML = opts;
+  if (!S.saHz) S.saHz = fluteHz(FLUTES[S.fluteIdx], S.a4);
+  applySettings(false);
+
+  el.startBtn.onclick = function () { S.running ? stop() : start(); };
+  el.setBtn.onclick = function () { el.settings.showModal(); };
+  el.tagline.onclick = function () { el.settings.showModal(); el.saSelect.focus(); };
+  el.closeSet.onclick = function () { el.settings.close(); };
+  el.clearBtn.onclick = resetAnalysis;
+
+  el.droneBtn.onclick = function () {
+    if (!A.ctx) { return; }
+    S.droneOn = !S.droneOn;
+    el.droneBtn.setAttribute('aria-pressed', String(S.droneOn));
+    if (S.droneOn) { droneOn(); el.scopeNote.textContent = 'Drone on — use headphones, or Naad will hear it too.'; }
+    else { droneOff(); el.scopeNote.textContent = 'Locked to your pitch — a steady note freezes the wave.'; }
+  };
+
+  el.saSelect.onchange = function () { S.fluteIdx = +this.value; applySettings(true); };
+  el.saHz.onchange = function () { var v = parseFloat(this.value); if (v > 100 && v < 1500) { S.saHz = v; applySettings(false); } };
+  el.a4.onchange = function () { var v = parseFloat(this.value); if (v > 380 && v < 480) { S.a4 = v; applySettings(true); } };
+  el.tol.oninput = function () { S.tol = +this.value; el.tolHint.textContent = '±' + S.tol + ' cents — ' + tolLabel(S.tol); save(); };
+  el.cyc.oninput = function () { S.cycles = +this.value; el.cycHint.textContent = S.cycles + ' cycle' + (S.cycles > 1 ? 's' : '') + ' across the screen'; save(); };
+  el.droneVol.oninput = function () {
+    S.droneVol = +this.value / 100; save();
+    if (A.droneGain && A.ctx) A.droneGain.gain.setTargetAtTime(S.droneVol, A.ctx.currentTime, 0.1);
+  };
+  el.tunET.onclick = function () { S.tuning = 'et'; applySettings(false); };
+  el.tunJI.onclick = function () { S.tuning = 'ji'; applySettings(false); };
+  el.calibBtn.onclick = calibrate;
+  el.wakeBtn.onclick = toggleWake;
+
+  document.querySelectorAll('[data-win]').forEach(function (b) {
+    b.onclick = function () { S.winSize = +b.dataset.win; applySettings(false); };
+  });
+  document.querySelectorAll('[data-theme-set]').forEach(function (b) {
+    b.onclick = function () { S.theme = b.dataset.themeSet; applySettings(false); };
+  });
+  document.querySelectorAll('[data-mode]').forEach(function (b) {
+    b.onclick = function () { S.mode = b.dataset.mode; drill.holdMs = 0; applySettings(false); };
+  });
+
+  try {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { readTheme(); });
+  } catch (e) {}
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input,select,textarea') || el.settings.open) return;
+    if (e.code === 'Space') { e.preventDefault(); S.running ? stop() : start(); }
+    else if (e.key === 'd' || e.key === 'D') el.droneBtn.click();
+    else if (e.key === 'c' || e.key === 'C') resetAnalysis();
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    if (A.ctx && A.ctx.state !== 'running') { try { A.ctx.resume(); } catch (e) {} }
+    if (S.running && !A.raf) { lastT = 0; A.raf = requestAnimationFrame(loop); }
+    if (S.wake === null && el.wakeBtn.getAttribute('aria-pressed') === 'true') toggleWake();
+  });
+
+  window.addEventListener('pagehide', function () { if (A.stream) A.stream.getTracks().forEach(function (t) { t.stop(); }); });
+
+  if (micBlockedByFrame()) showFrameNotice();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+
+})();
+</script>
